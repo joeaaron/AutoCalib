@@ -1,0 +1,1149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>calibrationPage</class>
+ <widget class="QWidget" name="calibrationPage">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1071</width>
+    <height>632</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>calibrationPage</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QVBoxLayout" name="verticalLayout_4">
+     <item>
+      <widget class="QFrame" name="displayFrame">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QGridLayout" name="displayLayout">
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QFrame" name="imageFrame">
+       <property name="font">
+        <font>
+         <weight>75</weight>
+         <bold>true</bold>
+        </font>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::Box</enum>
+       </property>
+       <property name="frameShadow">
+        <enum>QFrame::Raised</enum>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <item row="0" column="0">
+         <layout class="QVBoxLayout" name="verticalLayout_6">
+          <item>
+           <widget class="QCheckBox" name="videoCheckBox">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Light1</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox">
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Light2</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="1">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>128</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="0" column="2">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <item>
+           <widget class="QLabel" name="label">
+            <property name="maximumSize">
+             <size>
+              <width>80</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Camera:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="camCombo">
+            <property name="currentIndex">
+             <number>0</number>
+            </property>
+            <property name="maxVisibleItems">
+             <number>10</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>CAM1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CAM2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CAM3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CAM4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CAM5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CAM6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CAM7</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CAM8</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CAM9</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CAM10</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CAM11</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>CAM12</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="3">
+         <layout class="QVBoxLayout" name="verticalLayout_7">
+          <item>
+           <widget class="QPushButton" name="displayBtn">
+            <property name="minimumSize">
+             <size>
+              <width>111</width>
+              <height>23</height>
+             </size>
+            </property>
+            <property name="font">
+             <font>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Display</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="saveBtn">
+            <property name="minimumSize">
+             <size>
+              <width>150</width>
+              <height>0</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Save</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="4">
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>128</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="1" column="0">
+         <widget class="SwitchControl" name="widget" native="true">
+          <property name="maximumSize">
+           <size>
+            <width>51</width>
+            <height>21</height>
+           </size>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="1">
+    <widget class="QTabWidget" name="tabWidget">
+     <property name="minimumSize">
+      <size>
+       <width>400</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>400</width>
+       <height>16777215</height>
+      </size>
+     </property>
+     <property name="font">
+      <font>
+       <weight>75</weight>
+       <bold>true</bold>
+      </font>
+     </property>
+     <property name="tabPosition">
+      <enum>QTabWidget::East</enum>
+     </property>
+     <property name="tabShape">
+      <enum>QTabWidget::Triangular</enum>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
+     <property name="elideMode">
+      <enum>Qt::ElideNone</enum>
+     </property>
+     <property name="documentMode">
+      <bool>false</bool>
+     </property>
+     <widget class="QWidget" name="configTab">
+      <attribute name="title">
+       <string>Config</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QGroupBox" name="bigPanTiltBox">
+         <property name="title">
+          <string>BigPanTilt</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="0" column="0">
+           <widget class="QLabel" name="bigPanXLabel">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>X:</string>
+            </property>
+            <property name="buddy">
+             <cstring>imageFrame</cstring>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="bigPanXComBox">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Axis1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis7</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis8</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_2">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777213</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>OFFSET</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLineEdit" name="bigPanXOffsetLineEdit">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="bigPanZLabel">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Z:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="bigPanZComBox">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Axis1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis7</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis8</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="label_3">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777213</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>OFFSET</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QLineEdit" name="bigPanZOffsetLineEdit">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="smallPanTiltBox">
+         <property name="title">
+          <string>SmallPanTilt</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="0" column="0">
+           <widget class="QLabel" name="samllPanTiltXLabel">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>X:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="smallPanTiltZLabel">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Z:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="smallPanTiltZComBox">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Axis1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis7</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis8</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QComboBox" name="smallPanTiltXComBox">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Axis1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis7</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis8</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLineEdit" name="smallPanXOffsetLineEdit">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="label_4">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777213</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>OFFSET</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="label_5">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777213</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>OFFSET</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="3">
+           <widget class="QLineEdit" name="smallPanZOffsetLineEdit">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="xyzBox">
+         <property name="title">
+          <string>XYZ</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_5">
+          <item row="7" column="0">
+           <widget class="QLabel" name="xyzRLabel">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>R:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="xyzZLabel">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Z:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="xyzYLabel">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>Y:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="xyzXLabel">
+            <property name="maximumSize">
+             <size>
+              <width>30</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>X:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QComboBox" name="xyzXComBox">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Axis1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis7</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis8</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="5" column="2">
+           <widget class="QComboBox" name="xyzYComBox">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Axis1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis7</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis8</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QComboBox" name="xyzZComBox">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Axis1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis7</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis8</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="7" column="2">
+           <widget class="QComboBox" name="xyzRComBox">
+            <property name="currentIndex">
+             <number>-1</number>
+            </property>
+            <item>
+             <property name="text">
+              <string>Axis1</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis2</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis3</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis4</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis6</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis7</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Axis8</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="4" column="4">
+           <widget class="QLabel" name="label_6">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777213</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>OFFSET</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="5">
+           <widget class="QLineEdit" name="xyzXOffsetLineEdit">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="5">
+           <widget class="QLineEdit" name="xyzYOffsetLineEdit">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="4">
+           <widget class="QLabel" name="label_7">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777213</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>OFFSET</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="5">
+           <widget class="QLineEdit" name="xyzZOffsetLineEdit">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="4">
+           <widget class="QLabel" name="label_8">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777213</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>OFFSET</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="5">
+           <widget class="QLineEdit" name="xyzROffsetLineEdit">
+            <property name="maximumSize">
+             <size>
+              <width>120</width>
+              <height>16777215</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>0</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="4">
+           <widget class="QLabel" name="label_9">
+            <property name="maximumSize">
+             <size>
+              <width>60</width>
+              <height>16777213</height>
+             </size>
+            </property>
+            <property name="text">
+             <string>OFFSET</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QPushButton" name="saveConfigBtn">
+           <property name="text">
+            <string>&amp;SaveConfig</string>
+           </property>
+           <property name="shortcut">
+            <string>Ctrl+S</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="readConfigBtn">
+           <property name="text">
+            <string>&amp;ReadConfig</string>
+           </property>
+           <property name="shortcut">
+            <string>Ctrl+R</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>129</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="bigPanTiltTab">
+      <attribute name="title">
+       <string>BigPan</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <layout class="QVBoxLayout" name="bigPanPanesLayout"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="smallPanTiltTab">
+      <attribute name="title">
+       <string>SmallPan</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <layout class="QVBoxLayout" name="smallPanPanesLayout"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="xyzrTab">
+      <attribute name="title">
+       <string>XYZR</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_5">
+       <item>
+        <layout class="QVBoxLayout" name="xyzPanesLayout"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>SwitchControl</class>
+   <extends>QWidget</extends>
+   <header>switchbutton.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources>
+  <include location="icons.qrc"/>
+ </resources>
+ <connections/>
+</ui>

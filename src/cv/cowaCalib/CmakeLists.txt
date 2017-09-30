@@ -1,0 +1,33 @@
+project(CowaCalib)
+
+# Find includes in corresponding build directories
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+include_directories("${CMAKE_BINARY_DIR}/include")
+
+# Instruct CMake to run moc automatically when needed.
+set(CMAKE_AUTOMOC ON)
+
+# Find the OpenCV library
+find_package(OpenCV REQUIRED)
+
+# Create shared or static library
+if(CV_CALIB_EXPORT)
+	add_library(${PROJECT_NAME} SHARED cowaCalib.cpp)
+	#copy export header files to include directory
+	file(GLOB HEADERS *.h)
+	file(COPY ${HEADERS} DESTINATION "${CMAKE_BINARY_DIR}/include")
+else()
+	add_library(${PROJECT_NAME} STATIC cowaCalib.cpp)
+endif(CV_CALIB_EXPORT)
+
+set(EXTRA_LIBS ${EXTRA_LIBS} ${PROJECT_NAME} PARENT_SCOPE)
+
+target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
+set_target_properties(${PROJECT_NAME}
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+)
+
+

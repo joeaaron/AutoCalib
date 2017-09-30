@@ -1,0 +1,57 @@
+<RCC>
+  <qresource prefix="/">
+    <file>icons/upward.png</file>
+    <file>icons/forward .png</file>
+    <file>icons/backward.png</file>
+    <file>icons/leftward.png</file>
+    <file>icons/rightward.png</file>
+    <file>icons/downward.png</file>
+    <file>icons/clockwise.png</file>
+    <file>icons/counterclockwise.png</file>
+    <file>icons/inching.png</file>
+    <file>icons/blue_stopicon.png</file>
+    <file>icons/blue_starticon.png</file>
+    <file>icons/left-arrow.png</file>
+    <file>icons/right-arrow.png</file>
+    <file>icons/down-arrow.png</file>
+    <file>icons/big_starticon.png</file>
+    <file>icons/up-arrow.png</file>
+    <file>icons/big_stopicon.png</file>
+    <file>icons/powerofficon.png</file>
+    <file>icons/motion.png</file>
+    <file>icons/sensor.png</file>
+    <file>icons/mappainticon.png</file>
+    <file>icons/queuetabicon.png</file>
+    <file>icons/advancedicon.png</file>
+    <file>icons/clipboardicon_alpha.png</file>
+    <file>icons/resolutionicon.png</file>
+    <file>icons/collapsedicon.png</file>
+    <file>icons/expandedicon.png</file>
+    <file>icons/poweronicon.png</file>
+    <file>icons/luxrender.png</file>
+    <file>icons/clipboardicon.png</file>
+    <file>icons/colorspaceicon.png</file>
+    <file>icons/colouredv2cbisfx4.png</file>
+    <file>icons/gammaicon.png</file>
+    <file>icons/histogramicon.png</file>
+    <file>icons/lenseffectsicon.png</file>
+    <file>icons/lightgroupsicon.png</file>
+    <file>icons/logtabicon.png</file>
+    <file>icons/minusicon.png</file>
+    <file>icons/erroricon.png</file>
+    <file>icons/warningicon.png</file>
+    <file>icons/networktabicon.png</file>
+    <file>icons/noisereductionicon.png</file>
+    <file>icons/pauseicon.png</file>
+    <file>icons/plusicon.png</file>
+    <file>icons/rendertabicon.png</file>
+    <file>icons/resumeicon.png</file>
+    <file>icons/stopicon.png</file>
+    <file>icons/tonemapicon.png</file>
+    <file>icons/zoomicon.png</file>
+    <file>icons/analogclockicon.png</file>
+    <file>icons/arrowicon.png</file>
+    <file>icons/imageicon.png</file>
+    <file>icons/viewicon.png</file>
+  </qresource>
+</RCC>

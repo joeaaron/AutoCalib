@@ -1,0 +1,12 @@
+// the configured options and settings
+#ifndef _ECAT_CONFIG_H_
+#define _ECAT_CONFIG_H_
+#define VERSION_MAJOR @VERSION_MAJOR@
+#define VERSION_MINOR @VERSION_MINOR@
+#define VERSION_PATCH @VERSION_PATCH@
+
+#cmakedefine BUILD_CV
+#cmakedefine BUILD_GUI
+
+#cmakedefine CV_CALIB_EXPORT
+#endif

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Config name="Calibration">
+    <BIGPANTILT_X Axis="4" Offset="0"/>
+    <BIGPANTILT_Z Axis="5" Offset="0"/>
+    <SMALLPANTILT_X Axis="7" Offset="0"/>
+    <SMALLPANTILT_Z Axis="6" Offset="0"/>
+    <XYZ_X Axis="0" Offset="0"/>
+    <XYZ_Y Axis="1" Offset="0"/>
+    <XYZ_Z Axis="2" Offset="0"/>
+    <XYZ_R Axis="3" Offset="0"/>
+</Config>
