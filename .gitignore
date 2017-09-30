@@ -161,3 +161,12 @@ build/src/gui/ui_sensor.h
 build/src/gui/ui_setuppage.h
 build/src/gui/ui_xyzinching.h
 build/src/gui/ui_xyzp2p.h
+build/COWA-AUTO-CALIB.v12.suo
+build/src/gui/xml/VID5.xml
+build/src/gui/xml/_VID5.xml
+build/src/gui/xml/config.xml
+build/src/gui/xml/in_VID5.xml
+build/src/gui/xml/stereo_calib.xml
+build/src/gui/xmlbottom/VID5.xml
+build/src/gui/xmlbottom/_VID5.xml
+build/src/gui/xmlbottom/in_VID5.xml

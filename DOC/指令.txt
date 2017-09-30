@@ -1,0 +1,10 @@
+adb remount
+adb shell
+top | grep cowa
+cd system
+cd bin
+ls -al
+cd /data
+ls -al
+mv cowarobot /system/bin/
+reboot
