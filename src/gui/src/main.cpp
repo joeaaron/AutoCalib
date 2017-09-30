@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
 	//mainWindow.setWindowFlags(mainWindow.windowFlags()& ~Qt::WindowCloseButtonHint);   //Disable the window close btn
 	/*mainWindow.setWindowFlags(Qt::FramelessWindowHint | Qt::CustomizeWindowHint);
 	mainWindow.setMouseTracking(true);*/
-	//mainWindow.move((w - mainWindow.width()) / 2, (h - mainWindow.height()) / 2);
+	mainWindow.move((w - mainWindow.width()) / 2, (h - mainWindow.height()) / 2);
 	mainWindow.show();
 	return( app.exec() );
 }

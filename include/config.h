@@ -5,8 +5,8 @@
 #define VERSION_MINOR 1
 #define VERSION_PATCH 0
 
-#define BUILD_CV
-#define BUILD_GUI
+/* #undef BUILD_CV */
+/* #undef BUILD_GUI */
 
 /* #undef CV_CALIB_EXPORT */
 #endif

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.11)
-project(COWA-LUGGAGE-CALIB)
+project(COWA-AUTO-CALIB)
 include(CMakeDependentOption)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 # The version number.
