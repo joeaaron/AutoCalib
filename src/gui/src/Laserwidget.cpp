@@ -10,7 +10,7 @@
 using namespace ECAT::Network;
 
 #define PI 3.1415926
-const int DETECTACCURACY = 20;
+const int DETECTACCURACY = 200;
 const double STANDARD = 1500;
 
 LaserWidget::LaserWidget(QWidget *parent) :
