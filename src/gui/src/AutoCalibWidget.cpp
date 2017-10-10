@@ -732,18 +732,22 @@ void AutoCalibWidget::onCalibBtnClicked(){
 		out.open(outDir + "\\" + outBinFileName, std::ios_base::out | std::ios_base::binary);
 		while (!in.eof())
 		{
-			in.read(buffer, 256);       //从文件中读取256个字节的数据到缓存区  
-			int n = in.gcount();             //由于最后一行不知读取了多少字节的数据，所以用函数计算一下。  
-			out.write(buffer, n);       //写入那个字节的数据  
+			in.read(buffer, 256);			  //从文件中读取256个字节的数据到缓存区  
+			int n = in.gcount();              //由于最后一行不知读取了多少字节的数据，所以用函数计算一下。  
+			out.write(buffer, n);			 //写入那个字节的数据  
 		}
 		in.close();
 		out.close();
 
+		outDir = upperDirPath + "\\..\\cowa_cam_config\\aligned";
 		cv::destroyAllWindows();
 	}
 
 	std::cout << "Press any key to continue!" << std::endl;
 	getchar();
+	///adb push .bin files to suitcase
+	QString triggerCmd("adb push outDir\. /data/cowa_cam_config"), output;
+	bool ret = CMDParser::getInstance().adbCommand(triggerCmd, output);
 
 	File::copyDir(dirPath.c_str(), dstPath);
 }
