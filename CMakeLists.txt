@@ -15,7 +15,8 @@ configure_file (
   "${PROJECT_SOURCE_DIR}/include/config.h"
   )
 # include external library header files
-include_directories("${PROJECT_SOURCE_DIR}/include")
+include_directories("${PROJECT_SOURCE_DIR}/include"
+                    "${PROJECT_SOURCE_DIR}/src/ecatmc")
 # link external library directories
 link_directories("${PROJECT_SOURCE_DIR}/lib")
 
@@ -25,7 +26,7 @@ option(BUILD_GUI		"Build Graphic Interfaces"	ON)
 cmake_dependent_option(CV_CALIB_EXPORT	"build shared cowaCalib library"	OFF
 					   "BUILD_CV" ON)	
 #set a variable for adding module
-set(EXTRA_LIBS "ecatmc")
+#set(EXTRA_LIBS "ecatmc")
 set(EXTRA LIBS "cowaCalib")
 set(EXTRA_LIBS "Calib")
 set(EXTRA_LIBS "File")
@@ -37,3 +38,5 @@ endif(BUILD_CV)
 if(BUILD_GUI)
 	add_subdirectory(src/gui)
 endif(BUILD_GUI)
+
+add_subdirectory(src/ecatmc)

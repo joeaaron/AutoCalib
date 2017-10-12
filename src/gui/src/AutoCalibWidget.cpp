@@ -1268,6 +1268,7 @@ void AutoCalibWidget::onStartBtnToggled(bool checked){
 				return;
 			}
 		}
+		
 		updateTimer->start(100);	
 
 		QDateTime time = QDateTime::currentDateTime();					//获取系统现在的时间
@@ -1278,8 +1279,8 @@ void AutoCalibWidget::onStartBtnToggled(bool checked){
 		CMDParser::getInstance().setExposureValue(10);
 
 
-		if (!motionThread.joinable())
-			motionThread = std::thread(&AutoCalibWidget::onMotionStart, this);
+		/*if (!motionThread.joinable())
+			motionThread = std::thread(&AutoCalibWidget::onMotionStart, this);*/
 	}
 	else{
 

@@ -471,7 +471,8 @@ void CalibrationWidget::onVideoCheckBoxStateChanged(int state){
 		data[0] = 0;
 		data[1] = 0;
 		data[2] = 0;
-		MotionController::getInstance().setDigitalIO(data, 3);
+		data[3] = 0;
+		MotionController::getInstance().setDigitalIO(data, 4);
 	}
 	else
 	{
@@ -479,7 +480,8 @@ void CalibrationWidget::onVideoCheckBoxStateChanged(int state){
 		data[0] = 1;
 		data[1] = 1;
 		data[2] = 0;
-		MotionController::getInstance().setDigitalIO(data, 3);
+		data[3] = 1;
+		MotionController::getInstance().setDigitalIO(data, 4);
 	}
 		 
 }
@@ -491,7 +493,8 @@ void CalibrationWidget::onVideoCheckBox2StateChanged(int state){
 		data[0] = 0;
 		data[1] = 0;
 		data[2] = 0;
-		MotionController::getInstance().setDigitalIO(data, 3);
+		data[3] = 0;
+		MotionController::getInstance().setDigitalIO(data, 4);
 	}
 	else
 	{
@@ -499,7 +502,8 @@ void CalibrationWidget::onVideoCheckBox2StateChanged(int state){
 		data[0] = 1;
 		data[1] = 0;
 		data[2] = 1;
-		MotionController::getInstance().setDigitalIO(data, 3);
+		data[3] = 1;
+		MotionController::getInstance().setDigitalIO(data, 4);
 	}
 
 }

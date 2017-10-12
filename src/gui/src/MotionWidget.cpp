@@ -39,7 +39,7 @@ void MotionWidget::initSignals(){
 	connect(ui->homeBtn, SIGNAL(clicked()), this, SLOT(onHomeBtnClicked()));
 	connect(ui->velMoveBtn, SIGNAL(toggled(bool)), this, SLOT(onVelMoveBtnToggled(bool)));
 	connect(ui->posMoveBtn, SIGNAL(toggled(bool)), this, SLOT(onPosMoveBtnToggled(bool)));
-	connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimerOut()));
+	//connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimerOut()));
 	connect(this,SIGNAL(updatePosition(int)),ui->posLcdNumber,SLOT(display(int)));
 	connect(this,SIGNAL(updateVelocity(int)), ui->velLcdNumber, SLOT(display(int)));
 	connect(this, SIGNAL(updatePosition(int)), ui->posLcdNumber_2, SLOT(display(int)));
@@ -144,7 +144,7 @@ void MotionWidget::onHomeBtnClicked(){
 	// reduction ratio
 	qint32 reductionRatio = ui->reductionRatioSpinBox->value();
 	// circumference for linear mode is PI*diameter, for angular mode is 360 deg
-	double circumference = ui->angluarRadioBtn->isChecked() ? 360 : M_PI * ui->diameterDoubleSpinBox->value();
+	double circumference = ui->angluarRadioBtn->isChecked() ? 360 : (ui->diameterDoubleSpinBox->value());
 	// only for absolute encoder, for increment encoder is zero
 	qint32 offset = ui->incrementCheckBox->isChecked() ? 0 : ui->offsetSpinBox->value();
 	// pos convert to motor pulse
@@ -186,11 +186,12 @@ void MotionWidget::onVelMoveBtnToggled(bool checked){
 		// reduction ratio
 		qint32 reductionRatio = ui->reductionRatioSpinBox->value();
 		// circumference for linear mode is PI*diameter, for angular mode is 360 deg
-		double circumference = ui->angluarRadioBtn->isChecked() ? 360 : M_PI*ui->diameterDoubleSpinBox->value();
+		//double circumference = ui->angluarRadioBtn->isChecked() ? 360 : M_PI*ui->diameterDoubleSpinBox->value();
+		double circumference = ui->angluarRadioBtn->isChecked() ? 360 : ui->diameterDoubleSpinBox->value();
 		// convert to motor pulse
 		qint32 expVel = ui->velSlider->value();
 		expVel = expVel * encoderRange / circumference * reductionRatio;
-		//
+		
 		MOTION_ERROR err = MotionController::getInstance().moveAxis(axisID, expVel);
 		if (MOTION_ERROR_NONE != err){
 			QMessageBox::critical(this,
@@ -212,7 +213,7 @@ void MotionWidget::onVelMoveBtnToggled(bool checked){
 			HANDLE_MOTION_ERROR(err);
 			return;
 		}
-		//delay 500ms to leave axis velocity drop to zero
+		//delay 500ms to leave axis velocity drop to zerot99999
 		QTimer::singleShot(500, [this](){updateTimer->stop();});
 	}
 }

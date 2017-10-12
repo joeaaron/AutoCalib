@@ -50,7 +50,7 @@ target_link_libraries(${PROJECT_NAME}
 					  libglog
 					  cowaCalib
 					  Calib
-					  ecatmc.lib
+					  ecatmc
 					  fileFunction
 					  ${EXTRA_LIBS}
 					)

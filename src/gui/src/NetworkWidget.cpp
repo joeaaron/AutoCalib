@@ -35,7 +35,7 @@ void NetworkWidget::initUi(){
 	// init motion controller host 127.0.0.1
 	ui->motionHostCombo->addItem("127.0.0.1");
 	// init motion controller port 9000
-	ui->motionPortLineEdit->setText("9000");
+	ui->motionPortLineEdit->setText("5");
 }
 
 void NetworkWidget::initVariables(){
