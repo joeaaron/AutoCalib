@@ -74,7 +74,7 @@ void AutoCalibWidget::InitSignals()
 	connect(ui->testBtn, SIGNAL(clicked()), this, SLOT(onTestBtnClicked()));
 	connect(ui->importBtn, SIGNAL(clicked()), this, SLOT(onImportBtnClicked()));
 	connect(ui->saveBtn, SIGNAL(clicked()), this, SLOT(onSaveBtnClicked()));
-	connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimerOut()));
+	//connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimerOut()));
 
 	connect(&CMDParser::getInstance(), SIGNAL(recvImage(quint16, quint16, quint16, QByteArray)),
 		this, SLOT(onRecvImage(quint16, quint16, quint16, QByteArray)));
@@ -108,7 +108,7 @@ void AutoCalibWidget::initVariables(){
 	smallPanSaveFinish = false;
 	bigPanSaveFinish = false;
 	recvFinish = false;
-	isSaveImage = false;
+	isSaveImage = true;
 	isSmallBoardCalibrated = false;
 	bGetDeviation = false;
 	//bin to the ptr
@@ -495,24 +495,27 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 	qint32 offset = value.toInt();
 	if (!smallPanSaveFinish)
 	{
-		expXPos = xyz_xPoint_1.at(i) * 10000 / M_PI / 23.87 * 3;
-		expYPos = xyz_yPoint_1.at(i) * 10000 / M_PI / 23.87 * 3;
-		expZPos = xyz_zPoint_1.at(i) * 10000 / M_PI / 23.87 * 40;
-		expRPos = xyz_rPoint_1.at(i) * 10000 / 360 * 120 + offset;					//INCREMENTAL ENCODER
-		//expRPos = xyz_rPoint.at(i) * (1 << 17) / 360 * 100 + axesOffset->at(0);    //ABSOLUTE ENCODER
+		//expXPos = xyz_xPoint_1.at(i) * 10000 / M_PI / 23.87 * 3;
+		//expYPos = xyz_yPoint_1.at(i) * 10000 / M_PI / 23.87 * 3;
+		//expZPos = xyz_zPoint_1.at(i) * 10000 / M_PI / 23.87 * 40;
+		//expRPos = xyz_rPoint_1.at(i) * 10000 / 360 * 120 + offset;					//INCREMENTAL ENCODER
+		////expRPos = xyz_rPoint.at(i) * (1 << 17) / 360 * 100 + axesOffset->at(0);    //ABSOLUTE ENCODER
+		expXPos = xyz_xPoint_1.at(i) * (1 << 17) / 45 * 60;
+		expYPos = xyz_yPoint_1.at(i) * (1 << 17) / 20 * 60;
+		expZPos = xyz_zPoint_1.at(i) * (1 << 17) / 10 * 60;
+		expRPos = xyz_rPoint_1.at(i) * (1 << 17) / 360 * 100 * 60;
 	}
 	else
 	{
-		expXPos = xyz_xPoint_2.at(i) * 10000 / M_PI / 23.87 * 3;
-		expYPos = xyz_yPoint_2.at(i) * 10000 / M_PI / 23.87 * 3; 
-		expZPos = xyz_zPoint_2.at(i) * 10000 / M_PI / 23.87 * 40;
-		expRPos = xyz_rPoint_2.at(i) * 10000 / 360 * 120 + offset;					//INCREMENTAL ENCODER
-		//expRPos = xyz_rPoint.at(i) * (1 << 17) / 360 * 100 + axesOffset->at(0);    //ABSOLUTE ENCODER
+		expXPos = xyz_xPoint_2.at(i) * (1 << 17) / 45 * 60;
+		expYPos = xyz_xPoint_2.at(i) * (1 << 17) / 20 * 60;
+		expZPos = xyz_xPoint_2.at(i) * (1 << 17) / 10 * 60;
+		expRPos = xyz_xPoint_2.at(i) * (1 << 17) / 360 * 100 * 60;
 	}
 	
-	expXYVel = 40 * 10000 / M_PI / 23.87 * 3;
-	expZVel = 50 * 10000 / M_PI / 23.87 * 40;
-	expRVel = 55 * 10000 / 360 *  120;					//INCREMENTAL ENCODER
+	expXYVel = 40 * (1 << 17) / 45 * 60;
+	expZVel = 50  * (1 << 17) / 10 * 60;
+	expRVel = 55 * (1 << 17) / 360 * 100 * 60;					//INCREMENTAL ENCODER
 	//expRVel = 5 * (1 << 17) / 360 * 100;             //ABSOLUTE ENCODER
 
 	if (!xyzPtr->moveZP2P(expZPos, expZVel)){
@@ -765,34 +768,41 @@ void AutoCalibWidget::onLightSwitch(bool light)
 {
 	if (!smallPanSaveFinish)
 	{
-		if (light)
-		{
-			data[0] = 1;
-			data[1] = 1;
-			data[2] = 0;
-			MotionController::getInstance().setDigitalIO(data, 3);
-		}
-		else{
-			data[0] = 0;
-			data[1] = 0;
-			data[2] = 0;
-			MotionController::getInstance().setDigitalIO(data, 3);
-		}
-	}
-	else
-	{
+		quint8 data[4];
+	
 		if (light)
 		{
 			data[0] = 1;
 			data[1] = 0;
 			data[2] = 1;
+			data[3] = 0;
 			MotionController::getInstance().setDigitalIO(data, 3);
 		}
 		else{
 			data[0] = 0;
 			data[1] = 0;
 			data[2] = 0;
+			data[3] = 0;
 			MotionController::getInstance().setDigitalIO(data, 3);
+		}
+	}
+	else
+	{
+		quint8 _data[4];
+		if (light)
+		{
+			_data[0] = 0;
+			_data[1] = 1;
+			_data[2] = 0;
+			_data[3] = 1;
+			MotionController::getInstance().setDigitalIO(_data, 3);
+		}
+		else{
+			_data[0] = 0;
+			_data[1] = 0;
+			_data[2] = 0;
+			_data[3] = 0;
+			MotionController::getInstance().setDigitalIO(_data, 3);
 		}
 	}
 	
@@ -843,8 +853,8 @@ void AutoCalibWidget::onSmallBoardMotionPro()
 
 		for (int j = 0; j < SMALLPANSIZE / CAMERAS; ++j)
 		{
-			qint32 expSmallPitchPos = smallpan_xPoint.at(j + (i - 1) * 6) * (1 << 17) / 360 * 100 + axesOffset->at(0);
-			qint32 expSmallYawPos = smallpan_zPoint.at(j + (i - 1) * 6)* (1 << 17) / 360 * 100 + axesOffset->at(1);
+			qint32 expSmallPitchPos = smallpan_xPoint.at(j + (i - 1) * 6) * (1 << 17) / 360 * 40 * 60 + axesOffset->at(0);
+			qint32 expSmallYawPos = smallpan_zPoint.at(j + (i - 1) * 6)* (1 << 17) / 360 * 40 * 60 + axesOffset->at(1);
 			qint32 expSmallVel = 50 * (1 << 17) / 360 * 100;
 
 			if (!smallPanTiltPtr->pitchP2P(expSmallPitchPos, expSmallVel)){
@@ -1012,8 +1022,8 @@ void AutoCalibWidget::onSmallBoardMotion()
 
 		for (int j = 0; j < SMALLPANSIZE / CAMERAS; ++j)
 		{
-			qint32 expSmallPitchPos = smallpan_xPoint.at(j + (i - 1) * 6) * (1 << 17) / 360 * 100 + axesOffset->at(0);
-			qint32 expSmallYawPos = smallpan_zPoint.at(j + (i - 1) * 6)* (1 << 17) / 360 * 100 + axesOffset->at(1);
+			qint32 expSmallPitchPos = smallpan_xPoint.at(j + (i - 1) * 6) * (1 << 17) / 360 * 40 * 60 + axesOffset->at(0);
+			qint32 expSmallYawPos = smallpan_zPoint.at(j + (i - 1) * 6)* (1 << 17) / 360 * 40 * 60 + axesOffset->at(1);
 			qint32 expSmallVel = 60 * (1 << 17) / 360 * 100;
 
 			if (!smallPanTiltPtr->pitchP2P(expSmallPitchPos, expSmallVel)){
@@ -1135,8 +1145,8 @@ void AutoCalibWidget::onLargeBoardMotion()
 
 		for (int j = 0; j < BIGPANSIZE / CAMERAS; ++j)
 		{
-			qint32 expBigPitchPos = bigpan_xPoint.at(j + (i - 1) * 5) * (1 << 17) / 360 * 100 + axesOffset->at(0);
-			qint32 expBigYawPos = bigpan_zPoint.at(j + (i - 1) * 5)* (1 << 17) / 360 * 100 + axesOffset->at(1);
+			qint32 expBigPitchPos = bigpan_xPoint.at(j + (i - 1) * 5) * (1 << 17) / 360 * 40 * 60 + axesOffset->at(0);
+			qint32 expBigYawPos = bigpan_zPoint.at(j + (i - 1) * 5) * (1 << 17) / 360 * 40 * 60 + axesOffset->at(1);
 			qint32 expBigVel = 40 * (1 << 17) / 360 * 100;
 
 			if (!bigPanTiltPtr->pitchP2P(expBigPitchPos, expBigVel)){
@@ -1225,7 +1235,7 @@ void AutoCalibWidget::onMotionStart(){
 	if (!isSmallBoardCalibrated)
 	{
 		//calib using the small board
-		//onSmallBoardMotion();
+		onSmallBoardMotion();
 		onSmallBoardMotionPro();       //not used yet
 		//calib using the big board
 		onLargeBoardMotion();
@@ -1322,10 +1332,12 @@ void AutoCalibWidget::onStopBtnClicked(){
 	//ui->processLog->clear();
 	
 	//close the light
-	data[0] = 0; 
-	data[1] = 0;
-	data[2] = 0;
-	MotionController::getInstance().setDigitalIO(data, 3);
+	quint8 _data[4];
+	_data[0] = 0;
+	_data[1] = 0;
+	_data[2] = 0;
+	_data[3] = 0;
+	MotionController::getInstance().setDigitalIO(_data, 3);
 	
 	//disconnect the controller
 	onConnectClicked();

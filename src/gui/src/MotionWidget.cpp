@@ -89,12 +89,12 @@ void MotionWidget::onAxisComboActivated(int index){
 			}
 		}
 		err = MotionController::getInstance().readAxisEnabled(axisID, &flag);
-		if (MOTION_ERROR_NONE == err && flag){
+		/*if (MOTION_ERROR_NONE == err && flag){
 			err = MotionController::getInstance().disableAxis(axisID);
 			if (MOTION_ERROR_NONE == err){
-				ui->enableBtn->setText("ENABLE");
+			ui->enableBtn->setText("ENABLE");
 			}
-		}
+			}*/
 		axisID = index;
 	}
 
@@ -190,7 +190,7 @@ void MotionWidget::onVelMoveBtnToggled(bool checked){
 		double circumference = ui->angluarRadioBtn->isChecked() ? 360 : ui->diameterDoubleSpinBox->value();
 		// convert to motor pulse
 		qint32 expVel = ui->velSlider->value();
-		expVel = expVel * encoderRange / circumference * reductionRatio;
+		expVel = expVel * encoderRange / circumference * reductionRatio * 60;
 		
 		MOTION_ERROR err = MotionController::getInstance().moveAxis(axisID, expVel);
 		if (MOTION_ERROR_NONE != err){

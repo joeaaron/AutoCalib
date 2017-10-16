@@ -22,7 +22,7 @@ void XYZInchingWidget::initUi(){
 
 void XYZInchingWidget::initSignals(){
 	connect(ui->startBtn, SIGNAL(toggled(bool)), this, SLOT(onStartBtnToggled(bool)));
-	connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimerOut()));
+	//connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimerOut()));
 
 	QList<QPushButton*> buttons = ui->controlBox->findChildren< QPushButton* >();
 	for (auto btn : buttons)
@@ -100,7 +100,7 @@ void XYZInchingWidget::onDirectionBtnPressed(){
 		if (sender == ui->leftBtn)
 			linearVel = -linearVel;
 		//need conversion to motor speed
-		linearVel = linearVel * 10000 / M_PI / 23.87 * 3;
+		linearVel = linearVel * (1 << 17) / 45 * 60;
 		if (!xyzPtr->moveX(linearVel)){
 			QMessageBox::critical(this,
 				tr("Motion Error"),
@@ -113,7 +113,8 @@ void XYZInchingWidget::onDirectionBtnPressed(){
 		if (sender == ui->forwardBtn)
 			linearVel = -linearVel;
 		//need conversion to motor speed
-		linearVel = linearVel * 10000 / M_PI / 23.87 * 3;
+		//linearVel = linearVel * 10000 / M_PI / 23.87 * 3;
+		linearVel = linearVel * (1 << 17) / 20 * 60;
 		if (!xyzPtr->moveY(linearVel)){
 			QMessageBox::critical(this,
 				tr("Motion Error"),
@@ -126,7 +127,7 @@ void XYZInchingWidget::onDirectionBtnPressed(){
 		if (sender == ui->upBtn)
 			linearVel = -linearVel;
 		//need conversion to motor speed
-		linearVel = linearVel * 10000 / M_PI / 23.87 * 40;
+		linearVel = linearVel * (1 << 17) / 10 * 60;
 		if (!xyzPtr->moveZ(linearVel)){
 			QMessageBox::critical(this,
 				tr("Motion Error"),
@@ -138,7 +139,8 @@ void XYZInchingWidget::onDirectionBtnPressed(){
 		// rotation z
 		if (sender == ui->clockwiseBtn)
 			angularVel = -angularVel;
-		angularVel = angularVel * 10000 / 360 * 120;
+		//angularVel = angularVel * 10000 / 360 * 120;
+		angularVel = angularVel *(1 << 17) / 360 * 100 * 60;
 		if (!xyzPtr->moveR(angularVel)){
 			QMessageBox::critical(this,
 				tr("Motion Error"),

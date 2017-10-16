@@ -52,11 +52,16 @@ void XYZP2PWidget::onStartBtnToggled(bool checked){
 		}
 		updateTimer->start(100);
 		//
-		qint32 expXPos = ui->xPosSlider->value() * 10000 / M_PI / 23.87 * 3;
+		/*qint32 expXPos = ui->xPosSlider->value() * 10000 / M_PI / 23.87 * 3;
 		qint32 expYPos = ui->yPosSlider->value() * 10000 / M_PI / 23.87 * 3;
 		qint32 expZPos = ui->zPosSlider_2->value() * 10000 / M_PI / 23.87 * 40;
 		qint32 expRPos = ui->rPosSlider->value() * 10000 / 360 * 120;
-		qint32 expVel = ui->refVelSlider->value() * 10000 / M_PI / 23.87 * 3;
+		qint32 expVel = ui->refVelSlider->value() * 10000 / M_PI / 23.87 * 3;*/
+		qint32 expXPos = ui->xPosSlider->value() * (1 << 17) / 45 * 60;
+		qint32 expYPos = ui->yPosSlider->value()* (1 << 17) / 20 * 60;
+		qint32 expZPos = ui->zPosSlider_2->value() * (1 << 17) / 10 * 60;
+		qint32 expRPos = ui->rPosSlider->value() * (1 << 17) / 360 * 100 * 60;
+		qint32 expVel = ui->refVelSlider->value() * (1 << 17) / 45 * 60;
 		if (ui->axisXCheckBox->isChecked()){
 			if (!xyzPtr->moveXP2P(expXPos, expVel)){
 				QMessageBox::critical(this,
@@ -67,7 +72,7 @@ void XYZP2PWidget::onStartBtnToggled(bool checked){
 			}
 		}
 		if (ui->axisYCheckBox->isChecked())
-			if (!xyzPtr->moveYP2P(expXPos, expVel)){
+			if (!xyzPtr->moveYP2P(expYPos, expVel)){
 				QMessageBox::critical(this,
 					tr("Motion Error"),
 					QString("XYZ moveYP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
@@ -75,7 +80,7 @@ void XYZP2PWidget::onStartBtnToggled(bool checked){
 				return;
 			}
 		if (ui->axisZCheckBox_2->isChecked())
-			if (!xyzPtr->moveZP2P(expXPos, expVel)){
+			if (!xyzPtr->moveZP2P(expZPos, expVel)){
 				QMessageBox::critical(this,
 					tr("Motion Error"),
 					QString("XYZ moveZP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
@@ -83,7 +88,7 @@ void XYZP2PWidget::onStartBtnToggled(bool checked){
 				return;
 			}
 		if (ui->axisRCheckBox->isChecked())
-			if (!xyzPtr->moveRP2P(expXPos, expVel)){
+			if (!xyzPtr->moveRP2P(expRPos, expVel)){
 				QMessageBox::critical(this,
 					tr("Motion Error"),
 					QString("XYZ moveRP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)

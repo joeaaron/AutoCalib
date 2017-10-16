@@ -114,7 +114,6 @@ private:
 	double imgArea;
 
 	std::thread motionThread;
-	quint8 data[3];
 	bool isSaveImage;
 	QMutex pause;
 public:

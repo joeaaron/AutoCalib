@@ -172,9 +172,13 @@ void P2PWidget::onStartBtnToggled(bool checked){
 		{
 			//qint32 expPitchPos = counterpoints_x.at(i) * (1 << 17) / 360 * 100 + axesOffset->at(0);
 			//qint32 expYawPos = counterpoints_z.at(i)* (1 << 17) / 360 * 100 + axesOffset->at(1);
-			qint32 expPitchPos = ui->xPosSlider->value() * (1 << 17) / 360 * 100 + axesOffset->at(0);
-			qint32 expYawPos = ui->zPosSlider->value()* (1 << 17) / 360 * 100 + axesOffset->at(1);
-			qint32 expVel = ui->refVelSlider->value()* (1 << 17) / 360 * 100;
+
+			//qint32 expPitchPos = ui->xPosSlider->value() * (1 << 17) / 360 * 100 + axesOffset->at(0);
+			qint32 expPitchPos = ui->xPosSlider->value() * (1 << 17) / 360 * 40 * 60 + axesOffset->at(0);;
+			//qint32 expYawPos = ui->zPosSlider->value()* (1 << 17) / 360 * 100 + axesOffset->at(1);
+			qint32 expYawPos = ui->zPosSlider->value()* (1 << 17) / 360 * 40 * 60 + axesOffset->at(1);
+			//qint32 expVel = ui->refVelSlider->value()* (1 << 17) / 360 * 100;
+			qint32 expVel = ui->refVelSlider->value()*  (1 << 17) / 360 * 40 * 60;
 			if (ui->axisXCheckBox->isChecked()){
 				if (!panTiltPtr->pitchP2P(expPitchPos, expVel)){
 					QMessageBox::critical(this, 

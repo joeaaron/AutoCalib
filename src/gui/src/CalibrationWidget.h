@@ -55,7 +55,6 @@ private:
 	QMap<DEVICE_AXIS, int> deviceAxesMap;
 	QMap<DEVICE_AXIS, int> axisOffsetMap;
 	uint16_t num;
-	quint8 data[4];
 };
 
 #endif

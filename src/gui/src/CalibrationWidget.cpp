@@ -468,20 +468,22 @@ void CalibrationWidget::onVideoCheckBoxStateChanged(int state){
 	bVideo = (bool)state;
 	if (Qt::Unchecked == state)
 	{
-		data[0] = 0;
-		data[1] = 0;
-		data[2] = 0;
-		data[3] = 0;
-		MotionController::getInstance().setDigitalIO(data, 4);
+		quint8 _data[4];
+		_data[0] = 0;
+		_data[1] = 0;
+		_data[2] = 0;
+		_data[3] = 0;
+		MotionController::getInstance().setDigitalIO(_data, 4);
 	}
 	else
 	{
+		quint8 _data[4];
 		saveImgNum = 12;
-		data[0] = 1;
-		data[1] = 1;
-		data[2] = 0;
-		data[3] = 1;
-		MotionController::getInstance().setDigitalIO(data, 4);
+		_data[0] = 1;
+		_data[1] = 0;
+		_data[2] = 1;
+		_data[3] = 0;
+		MotionController::getInstance().setDigitalIO(_data, 4);
 	}
 		 
 }
@@ -490,20 +492,22 @@ void CalibrationWidget::onVideoCheckBox2StateChanged(int state){
 
 	if (Qt::Unchecked == state)
 	{
-		data[0] = 0;
-		data[1] = 0;
-		data[2] = 0;
-		data[3] = 0;
-		MotionController::getInstance().setDigitalIO(data, 4);
+		quint8 _data[4];
+		_data[0] = 0;
+		_data[1] = 0;
+		_data[2] = 0;
+		_data[3] = 0;
+		MotionController::getInstance().setDigitalIO(_data, 4);
 	}
 	else
 	{
 		saveImgNum = 10;
-		data[0] = 1;
-		data[1] = 0;
-		data[2] = 1;
-		data[3] = 1;
-		MotionController::getInstance().setDigitalIO(data, 4);
+		quint8 _data[4];
+		_data[0] = 0;
+		_data[1] = 1;
+		_data[2] = 0;
+		_data[3] = 1;
+		MotionController::getInstance().setDigitalIO(_data, 4);
 	}
 
 }

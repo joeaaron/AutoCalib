@@ -106,7 +106,7 @@ string int_to_str(int32_t num)
 string double_to_str(double num)
 {
 	char buff[64];
-	sprintf(buff, "%.3f", num);
+	sprintf(buff, "%.2f", num);
 	return std::string(buff);
 }
 int digital_input_size(size_t *size)
@@ -434,7 +434,24 @@ int motion_axis_enabled(axis_t index, char* flag)
 }
 int motion_axis_wait_finished(axis_t index)
 {
-	return 0;
+	while (1)
+	{
+		Sleep(5);
+		char flag;
+		int ret = motion_axis_finished(index, &flag);
+		if (0 != ret)
+		{
+			continue;
+		}
+		if (flag != 1)
+		{
+			continue;
+		}
+		else
+		{
+			return 0;
+		}
+	}
 }
 int motion_axis_finished(axis_t index, char* flag)
 {
@@ -730,7 +747,7 @@ int motion_axis_enable(axis_t index)
 				return 0;
 			}
 		}
-		else
+		//else
 			return 0;
 	}
 }
