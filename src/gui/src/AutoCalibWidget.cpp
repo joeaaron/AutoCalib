@@ -32,7 +32,6 @@ enum chessBoardPos{
 //using namespace ECAT::CALIB;
 using namespace JA::CV;
 using namespace JA::CPLUSPLUS;
-Calib calib;
 
 #define HAND_EYE_CALIBRATION_ROTATION_ANGLE  (-CV_PI/6)
 
@@ -528,6 +527,7 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 			);
 		return;
 	}
+	sleep(100);
 	xyzPtr->waitFinished(xyzaxesIndex->at(3));
 
 	if (!xyzPtr->moveZP2P(expZPos, expZVel)){
@@ -537,6 +537,7 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 			);
 		return;
 	}
+	sleep(100);
 	xyzPtr->waitFinished(xyzaxesIndex->at(2));
 
 	if (!xyzPtr->moveXP2P(expXPos, expXVel)){
@@ -546,6 +547,7 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 			);
 		return;
 	}
+	sleep(100);
 	xyzPtr->waitFinished(xyzaxesIndex->at(1));
 
 	if (!xyzPtr->moveYP2P(expYPos, expYVel)){
@@ -579,7 +581,7 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 		if (!isSaveImage)
 		{
 			srcImg = QImage2cvMat(image);
-			calib.GetDeviationPara(srcImg, para);
+			Calib::GetDeviationPara(srcImg, para);
 		}
 		
 		//saveImg
@@ -591,11 +593,33 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 	}
 }
 
+void AutoCalibWidget::triggerPush(QString pushCommand)
+{
+	CMDParser::getInstance().adbCommand(pushCommand);
+	sleep(10000);
+}
+
+void AutoCalibWidget::pushFiles()
+{
+	QString binFilesCommand("adb push .\images\cowa_cam_config\aligned /data/cowa_cam_config");
+	triggerPush(binFilesCommand);
+
+	QString yDividingCommand("adb push yDividing.txt /data/cowa_cam_config");
+	triggerPush(yDividingCommand);
+
+	QString cowarobotCommand("adb push cowarobot /system/bin");
+	triggerPush(cowarobotCommand);
+
+	QString cameraScCommand("adb push camera.sc8830.so /system/lib/hw");
+	triggerPush(cameraScCommand);
+
+}
+
 void AutoCalibWidget::onCalibBtnClicked(){
 
 	char buf[1000];
 	GetCurrentDirectory(1000, buf);
-	//std::cout << buf << std::endl;
+	std::cout << buf << std::endl;
 
 	std::string path = buf;
 	std::string dirPath = path + "\\images\\";
@@ -607,7 +631,7 @@ void AutoCalibWidget::onCalibBtnClicked(){
 	std::string mkDir2 = "md " + dirPath + "cowa_cam_config\\" + "unaligned";
 	std::string mkDir3 = "md " + dirPath + "cowa_cam_config\\" + "aligned";
 	std::string mkDir4 = "md " + backup + "cowa_R1";
-	
+
 	system(mkDir1.c_str());
 	system(mkDir2.c_str());
 	system(mkDir3.c_str());
@@ -645,25 +669,25 @@ void AutoCalibWidget::onCalibBtnClicked(){
 		std::string upperDirName = upperDirPath.substr(indexofUpperDir, upperDirPath.size());
 		std::string logDirPath = fullDirPath.substr(0, indexofUpperDir);
 
-		
+
 		if (upperDirName == "\\top") // calibrate top laser
 		{
-			calib.RunCalibrateCamera("in_VID5.xml", "out_camera_data.xml");
-			calib.RunCalibrateLaser("out_camera_data.xml", "_VID5.xml", "out_laser_camera.xml", "RawTransformationTable.bin");
+			Calib::RunCalibrateCamera("in_VID5.xml", "out_camera_data.xml");
+			Calib::RunCalibrateLaser("out_camera_data.xml", "_VID5.xml", "out_laser_camera.xml", "RawTransformationTable.bin");
 
 			if (currentDirName == "\\5")
 			{
-				calib.RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top\\1\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
+				Calib::RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top\\1\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
 			}
 			else if (currentDirName == "\\6")
 			{
-				calib.RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top\\3\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
+				Calib::RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top\\3\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
 			}
 			else
 			{
-				calib.RunStereoCalib("out_camera_data.xml", "config.xml", "out_stereo_data.xml");
-				calib.RunHandEyesCalib("out_stereo_data.xml", HAND_EYE_CALIBRATION_ROTATION_ANGLE, "out_handeyes_data.xml");
-				calib.RunTableChange("RawTransformationTable.bin", "out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
+				Calib::RunStereoCalib("out_camera_data.xml", "config.xml", "out_stereo_data.xml");
+				Calib::RunHandEyesCalib("out_stereo_data.xml", HAND_EYE_CALIBRATION_ROTATION_ANGLE, "out_handeyes_data.xml");
+				Calib::RunTableChange("RawTransformationTable.bin", "out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
 			}
 		}
 		else if (upperDirName == "\\bottom") // calibrate bottom laser
@@ -674,23 +698,23 @@ void AutoCalibWidget::onCalibBtnClicked(){
 			fs["camera_matrix"] >> cameraMatrix;
 			fs["distortion_coefficients"] >> distcofficients;
 
-			calib.RunCalibrateCamera("in_VID5.xml", "out_camera_data.xml", &cameraMatrix, &distcofficients);
-			calib.RunCalibrateLaser("out_camera_data.xml", "_VID5.xml", "out_laser_camera.xml", "RawTransformationTable.bin");
+			Calib::RunCalibrateCamera("in_VID5.xml", "out_camera_data.xml", &cameraMatrix, &distcofficients);
+			Calib::RunCalibrateLaser("out_camera_data.xml", "_VID5.xml", "out_laser_camera.xml", "RawTransformationTable.bin");
 
 			if (currentDirName == "\\5")
 			{
-				calib.RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top\\1\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
+				Calib::RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top\\1\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
 			}
 			else if (currentDirName == "\\6")
 			{
-				calib.RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top\\3\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
+				Calib::RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top\\3\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
 			}
 			else
 			{
 				if (currentDirName == "\\2")
-					calib.RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top" + currentDirName + "\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin", 0);
+					Calib::RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top" + currentDirName + "\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin", 0);
 				else
-					calib.RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top" + currentDirName + "\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
+					Calib::RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top" + currentDirName + "\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
 			}
 		}
 		else
@@ -734,22 +758,28 @@ void AutoCalibWidget::onCalibBtnClicked(){
 		out.open(outDir + "\\" + outBinFileName, std::ios_base::out | std::ios_base::binary);
 		while (!in.eof())
 		{
-			in.read(buffer, 256);			  //从文件中读取256个字节的数据到缓存区  
-			int n = in.gcount();              //由于最后一行不知读取了多少字节的数据，所以用函数计算一下。  
-			out.write(buffer, n);			 //写入那个字节的数据  
+			in.read(buffer, 256);       //从文件中读取256个字节的数据到缓存区  
+			int n = in.gcount();             //由于最后一行不知读取了多少字节的数据，所以用函数计算一下。  
+			out.write(buffer, n);       //写入那个字节的数据  
 		}
 		in.close();
 		out.close();
 
-		outDir = upperDirPath + "\\..\\cowa_cam_config\\aligned";
 		cv::destroyAllWindows();
 	}
 
+	//get the current dir
+	char buffer[1000];
+	GetCurrentDirectory(1000, buffer);
+	std::cout << buffer << std::endl;
+
+	//pushFiles();
+	
 	std::cout << "Press any key to continue!" << std::endl;
 	getchar();
 	///adb push .bin files to suitcase
-	QString triggerCmd("adb push outDir\. /data/cowa_cam_config"), output;
-	bool ret = CMDParser::getInstance().adbCommand(triggerCmd, output);
+	//QString triggerCmd("adb push outDir\. /data/cowa_cam_config"), output;
+	//bool ret = CMDParser::getInstance().adbCommand(triggerCmd, output);
 
 	File::copyDir(dirPath.c_str(), dstPath);
 }
@@ -1005,7 +1035,7 @@ void AutoCalibWidget::onSmallBoardMotionPro()
 void AutoCalibWidget::onSmallBoardMotion()
 {
 	chessBoardPos pos;
-	emit openTopLaser();
+	//emit openTopLaser();
 	QString value = ui->sCamlineEdit->text();
 	qint32 camID = value.toInt();
 
@@ -1249,8 +1279,13 @@ void AutoCalibWidget::onMotionStart(){
 		//calib using the big board
 		onLargeBoardMotion();
 	
+	
+	//calib the files
+	onCalibBtnClicked();
 	//onSmallBoardMotionPro();
 	onStartBtnToggled(false);
+	//terminate the procedure
+	onStopBtnClicked();
 }
 
 void AutoCalibWidget::onStartBtnToggled(bool checked){

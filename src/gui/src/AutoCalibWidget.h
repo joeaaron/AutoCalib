@@ -40,7 +40,8 @@ public:
 	void saveImg(qint32 cameraNum);
 	void printLog(qint32 cameraLaserID, QString& log);
 	cv::Mat QImage2cvMat(QImage image);
-	
+	void triggerPush(QString pushCommand);
+	void pushFiles();
 signals:
 	void Connect();
 	void Import();

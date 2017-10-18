@@ -33,6 +33,7 @@ namespace ECAT{
 			void setupNetwork(QString ip, quint16 port);								//setup the network environment
 			void exitNetwork();															//disconnected and exit network environment
 			bool adbCommand(QString program, QStringList arguments, QString& output);	//adb command to connect host to devices
+			bool adbCommand(QString cmdstr);											//adb command to connect host to devices
 			bool adbCommand(QString cmdstr, QString& output);							//adb command to connect host to devices
 			void openCam();																//open camera
 			void closeCam();														    //close camera

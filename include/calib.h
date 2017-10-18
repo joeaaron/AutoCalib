@@ -19,14 +19,14 @@ namespace JA{
 		class CALIB_API Calib
 		{
 		public:
-			int RunCalibrateCamera(const std::string inputSettingsFile, const std::string outCameraDataFilePath, cv::Mat* prefCameraMatrix = NULL, cv::Mat* prefDistCoefficent = NULL);
-			int RunCalibrateLaser(const std::string inputCameraDataFile, const std::string inputImageListFile, std::string outputLaserCameraFile, const std::string outputBinFile);
-			int RunStereoCalib(const std::string inputCameraDataFile, const std::string inputSettingsFile, const std::string outStereoDataFilePath);
-			int RunHandEyesCalib(const std::string inputStereoDataFile, float inputRotationAngle, const std::string outputHandEyesFile);
-			int RunTableChange(const std::string inputBinFile, const std::string inputHandEyesFile, const std::string inputLaserCameraFile, float offsetAngle_rad, char bRotate180, const std::string outputBinFile, char bCheckWorldCoordinate = 1);
-			std::vector<double> GetDeviationPara(cv::Mat, vector<double>& );
+			static int RunCalibrateCamera(const std::string inputSettingsFile, const std::string outCameraDataFilePath, cv::Mat* prefCameraMatrix = NULL, cv::Mat* prefDistCoefficent = NULL);
+			static int RunCalibrateLaser(const std::string inputCameraDataFile, const std::string inputImageListFile, std::string outputLaserCameraFile, const std::string outputBinFile);
+			static int RunStereoCalib(const std::string inputCameraDataFile, const std::string inputSettingsFile, const std::string outStereoDataFilePath);
+			static int RunHandEyesCalib(const std::string inputStereoDataFile, float inputRotationAngle, const std::string outputHandEyesFile);
+			static int RunTableChange(const std::string inputBinFile, const std::string inputHandEyesFile, const std::string inputLaserCameraFile, float offsetAngle_rad, char bRotate180, const std::string outputBinFile, char bCheckWorldCoordinate = 1);
+			static std::vector<double> GetDeviationPara(cv::Mat, vector<double>&);
 		private:
-			void sortConnerPoints(std::vector<cv::Point2f>& corners);
+			static void sortConnerPoints(std::vector<cv::Point2f>& corners);
 		};
 	}
 }

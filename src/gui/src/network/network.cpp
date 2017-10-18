@@ -68,6 +68,18 @@ NETWORK_API bool CMDParser::adbCommand(QString cmdstr, QString& output){
 	return true;
 }
 
+NETWORK_API bool CMDParser::adbCommand(QString cmdstr){
+	QProcess process(this);
+	process.start(cmdstr);
+	//process.start("adb forward tcp:6000 tcp:6000");
+	if (!process.waitForStarted())
+		return false;
+	if (!process.waitForFinished())
+		return false;
+
+	return true;
+}
+
 NETWORK_API void CMDParser::exitNetwork(){
 	assert(tcpSocket);
 	tcpSocket->disconnectFromHost();
