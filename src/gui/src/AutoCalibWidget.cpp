@@ -1279,13 +1279,12 @@ void AutoCalibWidget::onMotionStart(){
 		//calib using the big board
 		onLargeBoardMotion();
 	
-	
-	//calib the files
-	onCalibBtnClicked();
 	//onSmallBoardMotionPro();
 	onStartBtnToggled(false);
 	//terminate the procedure
 	onStopBtnClicked();
+	//calib the files
+	onCalibBtnClicked();
 }
 
 void AutoCalibWidget::onStartBtnToggled(bool checked){
@@ -1330,6 +1329,7 @@ void AutoCalibWidget::onStartBtnToggled(bool checked){
 
 		if (!motionThread.joinable())
 			motionThread = std::thread(&AutoCalibWidget::onMotionStart, this);
+
 	}
 	else{
 
