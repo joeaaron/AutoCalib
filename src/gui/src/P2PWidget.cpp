@@ -156,7 +156,7 @@ void P2PWidget::onReadConfig(){
 
 void P2PWidget::onStartBtnToggled(bool checked){
 	if (checked){
-		onReadConfig();
+		//onReadConfig();
 		if (!panTiltPtr->enabled()){
 				if (!panTiltPtr->enable()){
 				QMessageBox::critical(this,
@@ -168,17 +168,17 @@ void P2PWidget::onStartBtnToggled(bool checked){
 		}
 		updateTimer->start(100);
 		//
-		for (int i = 0; i < counterpoints_x.size(); ++i)
-		{
+		/*for (int i = 0; i < counterpoints_x.size(); ++i)
+		{*/
 			//qint32 expPitchPos = counterpoints_x.at(i) * (1 << 17) / 360 * 100 + axesOffset->at(0);
 			//qint32 expYawPos = counterpoints_z.at(i)* (1 << 17) / 360 * 100 + axesOffset->at(1);
 
 			//qint32 expPitchPos = ui->xPosSlider->value() * (1 << 17) / 360 * 100 + axesOffset->at(0);
-			qint32 expPitchPos = ui->xPosSlider->value() * (1 << 17) / 360 * 40 * 60 + axesOffset->at(0);;
+			qint32 expPitchPos = ui->xPosSpinBox->value() * (1 << 17) / 360 * 40 ;
 			//qint32 expYawPos = ui->zPosSlider->value()* (1 << 17) / 360 * 100 + axesOffset->at(1);
-			qint32 expYawPos = ui->zPosSlider->value()* (1 << 17) / 360 * 40 * 60 + axesOffset->at(1);
+			qint32 expYawPos = ui->zPosSpinBox->value() * (1 << 17) / 360 * 40;
 			//qint32 expVel = ui->refVelSlider->value()* (1 << 17) / 360 * 100;
-			qint32 expVel = ui->refVelSlider->value()*  (1 << 17) / 360 * 40 * 60;
+			qint32 expVel = ui->refVelSlider->value() *  (1 << 17) / 360 * 40;
 			if (ui->axisXCheckBox->isChecked()){
 				if (!panTiltPtr->pitchP2P(expPitchPos, expVel)){
 					QMessageBox::critical(this, 
@@ -199,7 +199,7 @@ void P2PWidget::onStartBtnToggled(bool checked){
 					return;
 				}
 			panTiltPtr->waitFinished(axesIndex->at(1));
-		}
+		
 	}
 	else{
 		if (!panTiltPtr->disable()){

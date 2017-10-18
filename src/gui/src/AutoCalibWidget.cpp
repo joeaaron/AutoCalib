@@ -112,16 +112,16 @@ void AutoCalibWidget::initVariables(){
 	isSmallBoardCalibrated = false;
 	bGetDeviation = false;
 	//bin to the ptr
-	bigaxesIndex->push_back(4);
 	bigaxesIndex->push_back(5);
+	bigaxesIndex->push_back(4);
 	bigPanTiltPtr->setAxes(bigaxesIndex);
 
 	smallaxesIndex->push_back(7);
 	smallaxesIndex->push_back(6);
 	smallPanTiltPtr->setAxes(smallaxesIndex);
 
-	xyzaxesIndex->push_back(0);
 	xyzaxesIndex->push_back(1);
+	xyzaxesIndex->push_back(0);
 	xyzaxesIndex->push_back(2);
 	xyzaxesIndex->push_back(3);
 	xyzPtr->setAxes(xyzaxesIndex);
@@ -168,11 +168,13 @@ void AutoCalibWidget::onTestBtnClicked(){
 	//Do something
 	//onSmallBoardMotionPro();     //test vision servo
 
-	cv::Mat dst = cv::imread("temp.bmp");
+	/*cv::Mat dst = cv::imread("temp.bmp");
 	cv::Mat viewGray;
 	cvtColor(dst, viewGray, cv::COLOR_BGR2GRAY);
 
-	calib.GetDeviationPara(dst, para);
+	calib.GetDeviationPara(dst, para);*/
+	qDebug() << xyz_xPoint_2.at(0);
+
 }
 
 void AutoCalibWidget::onOpenBottomLaser(){
@@ -490,7 +492,7 @@ void AutoCalibWidget::onSaveBtnClicked(){
 void AutoCalibWidget::suitcaseMotion(qint32 i)
 {
 	qint32 expXPos, expYPos, expZPos, expRPos;
-	qint32 expXYVel, expZVel, expRVel;
+	qint32 expXVel, expYVel, expZVel, expRVel;
 	QString value = ui->offsetlineEdit->text();
 	qint32 offset = value.toInt();
 	if (!smallPanSaveFinish)
@@ -500,23 +502,33 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 		//expZPos = xyz_zPoint_1.at(i) * 10000 / M_PI / 23.87 * 40;
 		//expRPos = xyz_rPoint_1.at(i) * 10000 / 360 * 120 + offset;					//INCREMENTAL ENCODER
 		////expRPos = xyz_rPoint.at(i) * (1 << 17) / 360 * 100 + axesOffset->at(0);    //ABSOLUTE ENCODER
-		expXPos = xyz_xPoint_1.at(i) * (1 << 17) / 45 * 60;
-		expYPos = xyz_yPoint_1.at(i) * (1 << 17) / 20 * 60;
-		expZPos = xyz_zPoint_1.at(i) * (1 << 17) / 10 * 60;
-		expRPos = xyz_rPoint_1.at(i) * (1 << 17) / 360 * 100 * 60;
+		expXPos = xyz_xPoint_1.at(i) * (1 << 17) / 45;
+		expYPos = xyz_yPoint_1.at(i) * (1 << 17) / 20;
+		expZPos = xyz_zPoint_1.at(i) * (1 << 17) / 10;
+		expRPos = xyz_rPoint_1.at(i) * (1 << 17) / 360 * 100;
 	}
 	else
 	{
-		expXPos = xyz_xPoint_2.at(i) * (1 << 17) / 45 * 60;
-		expYPos = xyz_xPoint_2.at(i) * (1 << 17) / 20 * 60;
-		expZPos = xyz_xPoint_2.at(i) * (1 << 17) / 10 * 60;
-		expRPos = xyz_xPoint_2.at(i) * (1 << 17) / 360 * 100 * 60;
+		expXPos = xyz_xPoint_2.at(i) * (1 << 17) / 45;
+		expYPos = xyz_yPoint_2.at(i) * (1 << 17) / 20;
+		expZPos = xyz_zPoint_2.at(i) * (1 << 17) / 10;
+		expRPos = xyz_rPoint_2.at(i) * (1 << 17) / 360 * 100;
 	}
 	
-	expXYVel = 40 * (1 << 17) / 45 * 60;
-	expZVel = 50  * (1 << 17) / 10 * 60;
-	expRVel = 55 * (1 << 17) / 360 * 100 * 60;					//INCREMENTAL ENCODER
-	//expRVel = 5 * (1 << 17) / 360 * 100;             //ABSOLUTE ENCODER
+	expXVel = 40 * (1 << 17) / 45;
+	expYVel = 40 * (1 << 17) / 20;
+	expZVel = 50  * (1 << 17) / 10;
+	expRVel = 55 * (1 << 17) / 360 * 100;					//INCREMENTAL ENCODER
+	//expRVel = 5 * (1 << 17) / 360 * 100;					//ABSOLUTE ENCODER
+	
+	if (!xyzPtr->moveRP2P(expRPos, expRVel)){
+		QMessageBox::critical(this,
+			tr("Motion Error"),
+			QString("XYZ moveRP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+			);
+		return;
+	}
+	xyzPtr->waitFinished(xyzaxesIndex->at(3));
 
 	if (!xyzPtr->moveZP2P(expZPos, expZVel)){
 		QMessageBox::critical(this,
@@ -525,30 +537,18 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 			);
 		return;
 	}
-	sleep(100);
 	xyzPtr->waitFinished(xyzaxesIndex->at(2));
 
-	if (!xyzPtr->moveRP2P(expRPos, expRVel)){
-		QMessageBox::critical(this,
-			tr("Motion Error"),
-			QString("XYZ moveRP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
-		return;
-	}
-	sleep(100);
-	xyzPtr->waitFinished(xyzaxesIndex->at(3));
-
-	if (!xyzPtr->moveXP2P(expXPos, expXYVel)){
+	if (!xyzPtr->moveXP2P(expXPos, expXVel)){
 		QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("XYZ moveXP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
 			);
 		return;
 	}
-	sleep(100);
-	xyzPtr->waitFinished(xyzaxesIndex->at(0));
+	xyzPtr->waitFinished(xyzaxesIndex->at(1));
 
-	if (!xyzPtr->moveYP2P(expYPos, expXYVel)){
+	if (!xyzPtr->moveYP2P(expYPos, expYVel)){
 		QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("XYZ moveYP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
@@ -556,9 +556,8 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 		return;
 	}
 	sleep(100);
-	xyzPtr->waitFinished(xyzaxesIndex->at(1));
+	xyzPtr->waitFinished(xyzaxesIndex->at(0));
 
-	
 }
 
 void AutoCalibWidget::sleep(unsigned int msec)
@@ -1022,9 +1021,12 @@ void AutoCalibWidget::onSmallBoardMotion()
 
 		for (int j = 0; j < SMALLPANSIZE / CAMERAS; ++j)
 		{
-			qint32 expSmallPitchPos = smallpan_xPoint.at(j + (i - 1) * 6) * (1 << 17) / 360 * 40 * 60 + axesOffset->at(0);
+		/*	qint32 expSmallPitchPos = smallpan_xPoint.at(j + (i - 1) * 6) * (1 << 17) / 360 * 40 * 60 + axesOffset->at(0);
 			qint32 expSmallYawPos = smallpan_zPoint.at(j + (i - 1) * 6)* (1 << 17) / 360 * 40 * 60 + axesOffset->at(1);
-			qint32 expSmallVel = 60 * (1 << 17) / 360 * 100;
+*/
+			qint32 expSmallPitchPos = smallpan_xPoint.at(j + (i - 1) * 6) * (1 << 17) / 360 * 40 ;
+			qint32 expSmallYawPos = smallpan_zPoint.at(j + (i - 1) * 6)* (1 << 17) / 360 * 40 ;
+			qint32 expSmallVel = 10 * (1 << 17) / 360 * 40;
 
 			if (!smallPanTiltPtr->pitchP2P(expSmallPitchPos, expSmallVel)){
 				QMessageBox::critical(this,
@@ -1145,11 +1147,12 @@ void AutoCalibWidget::onLargeBoardMotion()
 
 		for (int j = 0; j < BIGPANSIZE / CAMERAS; ++j)
 		{
-			qint32 expBigPitchPos = bigpan_xPoint.at(j + (i - 1) * 5) * (1 << 17) / 360 * 40 * 60 + axesOffset->at(0);
-			qint32 expBigYawPos = bigpan_zPoint.at(j + (i - 1) * 5) * (1 << 17) / 360 * 40 * 60 + axesOffset->at(1);
-			qint32 expBigVel = 40 * (1 << 17) / 360 * 100;
+			qint32 expBigPitchPos = bigpan_xPoint.at(j + (i - 1) * 5) * (1 << 17) / 360 * 100;
+			qint32 expBigYawPos = bigpan_zPoint.at(j + (i - 1) * 5) * (1 << 17) / 360 * 40;
+			qint32 expBigPitchVel = 10 * (1 << 17) / 360 * 100;
+			qint32 expBigYawVel = 10 * (1 << 17) / 360 * 40;
 
-			if (!bigPanTiltPtr->pitchP2P(expBigPitchPos, expBigVel)){
+			if (!bigPanTiltPtr->pitchP2P(expBigPitchPos, expBigPitchVel)){
 				QMessageBox::critical(this,
 					tr("Motion Error"),
 					QString("BigPantilt pitchP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
@@ -1158,7 +1161,7 @@ void AutoCalibWidget::onLargeBoardMotion()
 			}
 			bigPanTiltPtr->waitFinished(bigaxesIndex->at(0));
 
-			if (!bigPanTiltPtr->yawP2P(expBigYawPos, expBigVel)){
+			if (!bigPanTiltPtr->yawP2P(expBigYawPos, expBigYawVel)){
 				QMessageBox::critical(this,
 					tr("Motion Error"),
 					QString("BigPantilt yawP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
@@ -1167,8 +1170,9 @@ void AutoCalibWidget::onLargeBoardMotion()
 			}
 			bigPanTiltPtr->waitFinished(bigaxesIndex->at(1));
 
+			sleep(5000);
 			onLightSwitch(true);
-			sleep(3000);
+			sleep(5000);
 			emit ReachLocation(i + 8 - 1, false);       //Merge into a function
 			while (!recvFinish)
 			{
@@ -1178,7 +1182,7 @@ void AutoCalibWidget::onLargeBoardMotion()
 			//sleep(3000);
 
 			onLightSwitch(false);
-			sleep(3000);
+			sleep(5000);
 			emit ReachLocation(i - 1, true);				 //Merge into a function
 			while (!recvFinish)
 			{
@@ -1226,17 +1230,17 @@ void AutoCalibWidget::onLargeBoardMotion()
 
 void AutoCalibWidget::onMotionStart(){
 	//go home
-	xyzPtr->home(xyzaxesIndex->at(0));
+	/*xyzPtr->home(xyzaxesIndex->at(0));
 	xyzPtr->home(xyzaxesIndex->at(1));
 	xyzPtr->home(xyzaxesIndex->at(2));
 	xyzPtr->home(xyzaxesIndex->at(3));
-	xyzPtr->waitFinished(xyzaxesIndex->at(2));
+	xyzPtr->waitFinished(xyzaxesIndex->at(2));*/
 	
 	if (!isSmallBoardCalibrated)
 	{
 		//calib using the small board
 		onSmallBoardMotion();
-		onSmallBoardMotionPro();       //not used yet
+		//onSmallBoardMotionPro();       //not used yet
 		//calib using the big board
 		onLargeBoardMotion();
 	}
@@ -1289,8 +1293,8 @@ void AutoCalibWidget::onStartBtnToggled(bool checked){
 		CMDParser::getInstance().setExposureValue(10);
 
 
-		/*if (!motionThread.joinable())
-			motionThread = std::thread(&AutoCalibWidget::onMotionStart, this);*/
+		if (!motionThread.joinable())
+			motionThread = std::thread(&AutoCalibWidget::onMotionStart, this);
 	}
 	else{
 

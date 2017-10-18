@@ -8,7 +8,7 @@ using namespace std;
 class InchingWidget:public QWidget{
 	Q_OBJECT
 public:
-	InchingWidget(QWidget* parent = 0, Qt::WindowFlags flags = 0);
+	InchingWidget(QWidget* parent = 0, QString name = "0" , Qt::WindowFlags flags = 0);
 	~InchingWidget();
 	void initUi();
 	void initSignals();
@@ -29,5 +29,8 @@ private:
 	shared_ptr<PanTilt> panTiltPtr;
 	QTimer* updateTimer;
 	qint32 vel;
+	qint32 _vel;
+	qint32 reduction;
+	bool bBig;
 };
 #endif

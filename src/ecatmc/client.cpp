@@ -11,75 +11,99 @@ using namespace std;
 #include "ecatmc.h"
 #define DEBUG_INFO(...) //printf
 
-CSerialPort serial_port;
+#define SERIAL_SIZE 2
+CSerialPort serial_port[SERIAL_SIZE];
 
-void clear_serial_port()
+void clear_serial_port(int index)
 {
-	serial_port.Enter_Critical();
-	bool is_empty = serial_port.fifo.is_empty();
+	serial_port[index].Enter_Critical();
+	bool is_empty = serial_port[index].fifo.is_empty();
 	if (!is_empty)
 	{
-		serial_port.fifo.reset();
-		serial_port.Leave_Critical();
+		serial_port[index].fifo.reset();
+		serial_port[index].Leave_Critical();
 	}
 	else
 	{
-		serial_port.Leave_Critical();
+		serial_port[index].Leave_Critical();
 		return;
 	}
 }
-string serial_read_data()
+string serial_read_data(int index)
 {
 	string data = "";
-	serial_port.Enter_Critical();
-	bool is_empty = serial_port.fifo.is_empty();
-	serial_port.Leave_Critical();
+	serial_port[index].Enter_Critical();
+	bool is_empty = serial_port[index].fifo.is_empty();
+	serial_port[index].Leave_Critical();
 	while (!is_empty)
 	{
 		char c = 0;
-		serial_port.Enter_Critical();
-		serial_port.fifo.out(&c, 1);
+		serial_port[index].Enter_Critical();
+		serial_port[index].fifo.out(&c, 1);
 		data = data + c;
-		is_empty = serial_port.fifo.is_empty();
-		serial_port.Leave_Critical();
+		is_empty = serial_port[index].fifo.is_empty();
+		serial_port[index].Leave_Critical();
 	}
 	return data;
 }
 int select_axis(int index)
 {
-	clear_serial_port();
+	int serial_index = 0;
+	if (index > 3)
+	{
+		serial_index = 1;
+	}
+	clear_serial_port(serial_index);
 	//—°÷–÷·
 	string cmd;
 	stringstream ss;
 
 	ss << index + 3;
-	cmd = "\\" + ss.str();
+	cmd = "\\" + ss.str() + "\r";
 
-	serial_port.WriteData((unsigned char *)cmd.c_str(), cmd.size());
-	unsigned char c = 0x0D;
-	serial_port.WriteData(&c, 1);
+	serial_port[serial_index].WriteData((unsigned char *)cmd.c_str(), cmd.size());
 	string status = "";
 	int times = 0;
 	do
 	{
 		times++;
-		status = status + serial_read_data();
+		status = status + serial_read_data(serial_index);
 		if (-1 != status.find(ss.str() + "->"))
 		{
+			cmd = "\r";
+			serial_port[serial_index].WriteData((unsigned char *)cmd.c_str(), cmd.size());
 			return 0;
 		}
 	} while (times < 100);
 	return -1;
 }
-int send_cmd(string cmd)
+int send_cmd(int axis_index, string cmd)
 {
-	clear_serial_port();
+	int serial_index = 0;
+	int sended_size = 0;
+	if (axis_index > 3)
+	{
+		serial_index = 1;
+	}
+	clear_serial_port(serial_index);
 	cmd = cmd + "\r";
-	serial_port.WriteData((unsigned char *)cmd.c_str(), cmd.size());
+	while (sended_size < cmd.size())
+	{
+		int size = ((cmd.size() - sended_size) > 5) ? 5 : (cmd.size() - sended_size);
+		serial_port[serial_index].WriteData((unsigned char *)cmd.c_str() + sended_size, size);
+		sended_size += size;
+		Sleep(20);
+	}
+	
 	return 0;
 }
 string get_status(int index)
 {
+	int serial_index = 0;
+	if (index > 3)
+	{
+		serial_index = 1;
+	}
 	stringstream ss;
 	ss << index + 3;
 
@@ -88,7 +112,7 @@ string get_status(int index)
 	do
 	{
 		times++;
-		status = status + serial_read_data();
+		status = status + serial_read_data(serial_index);
 		int index = status.find(ss.str() + "->");
 		if (-1 != index)
 		{
@@ -145,22 +169,20 @@ int set_digital_output(uint8_t* data, size_t size)
 		return -1;
 	}
 	Sleep(100);
-	int i = (size == 0 ? -1 : 0);
-	while (i < (int64_t)size)
+	for (int i = 0; i < (int64_t)size; i++)
 	{
 		times = 0;
 		char flag = 0;
 		do
-		{
+		{  
 			times++;
-			ret = send_cmd("out " + int_to_str(i * 2 + 4) + " " + int_to_str(data[i == -1 ? 0 : i]));
+			ret = send_cmd(2, "out " + int_to_str(i * 2 + 8) + " " + int_to_str(data[i]));
 			if (ret != 0)
 			{
 				continue;
 			}
 			Sleep(50);
 		} while (times < 5);
-		i++;
 	}
 	return 0;
 }
@@ -344,12 +366,12 @@ int motion_axis_stopped(axis_t index, char* flag)
 	do
 	{
 		times++;
-		ret = send_cmd("stopped");
+		ret = send_cmd(index, "stopped");
 		if (ret != 0)
 		{
 			continue;
 		}
-		Sleep(50);
+		Sleep(100);
 		string status = get_status(index);
 		stringstream ss;
 		int _index = status.find_first_not_of("\r\n");
@@ -403,7 +425,7 @@ int motion_axis_enabled(axis_t index, char* flag)
 	do
 	{
 		times++;
-		ret = send_cmd("active");
+		ret = send_cmd(index, "active");
 		if (ret != 0)
 		{
 			continue;
@@ -475,7 +497,7 @@ int motion_axis_finished(axis_t index, char* flag)
 	do
 	{
 		times++;
-		ret = send_cmd("stopped");
+		ret = send_cmd(index,"stopped");
 		if (ret != 0)
 		{
 			continue;
@@ -533,7 +555,7 @@ int motion_axis_position(axis_t index, int32_t* p)
 	do
 	{
 		times++;
-		ret = send_cmd("pfb");
+		ret = send_cmd(index,"pfb");
 		if (ret != 0)
 		{
 			continue;
@@ -561,7 +583,8 @@ int motion_axis_position(axis_t index, int32_t* p)
 		{
 			continue;
 		}
-	} while (times < 100);
+		Sleep(50);
+	} while (times < 5);
 	return -1;
 }
 int motion_axis_velocity(axis_t index, int32_t* v)
@@ -586,7 +609,7 @@ int motion_axis_velocity(axis_t index, int32_t* v)
 	do
 	{
 		times++;
-		ret = send_cmd("v");
+		ret = send_cmd(index,"v");
 		if (ret != 0)
 		{
 			continue;
@@ -609,14 +632,15 @@ int motion_axis_velocity(axis_t index, int32_t* v)
 			ss << status;
 			double vel = 0;
 			ss >> vel;
-			*v = (int32_t)(vel * 131072);
+			*v = (int32_t)(vel * 131072.0 / 60);
 			return 0;
 		}
 		else
 		{
 			continue;
 		}
-	} while (times < 100);
+		Sleep(50);
+	} while (times < 5);
 	return -1;
 }
 int motion_axis_halted(axis_t index, char* flag)
@@ -646,7 +670,7 @@ int motion_axis_enable(axis_t index)
 	do
 	{
 		times++;
-		send_cmd("en");
+		send_cmd(index,"en");
 		flag = 0;
 		int ret = motion_axis_enabled(index, &flag);
 		if (0 != ret)
@@ -664,91 +688,15 @@ int motion_axis_enable(axis_t index)
 				continue;
 			}
 		}
-	} while (times < 100);
+		Sleep(50);
+	} while (times < 5);
 	if (flag == 0)
 	{
 		return -1;
 	}
 	else
 	{
-		if (index == 2 || index == 4 || index == 5)
-		{
-			do
-			{
-				flag = 0;
-				int ret = motion_axis_enabled(2, &flag);
-				if (0 != ret)
-				{
-					continue;
-				}
-				else
-				{
-					if (flag == 1)
-					{
-						break;
-					}
-					else
-					{
-						return 0;
-					}
-				}
-			} while (1);
-
-			do
-			{
-				flag = 0;
-				int ret = motion_axis_enabled(4, &flag);
-				if (0 != ret)
-				{
-					continue;
-				}
-				else
-				{
-					if (flag == 1)
-					{
-						break;
-					}
-					else
-					{
-						return 0;
-					}
-				}
-			} while (1);
-
-			do
-			{
-				flag = 0;
-				int ret = motion_axis_enabled(5, &flag);
-				if (0 != ret)
-				{
-					continue;
-				}
-				else
-				{
-					if (flag == 1)
-					{
-						break;
-					}
-					else
-					{
-						return 0;
-					}
-				}
-			} while (1);
-
-			uint8_t motor_break[1] = { 1 };
-			ret = set_digital_output(motor_break, 0);
-			if (ret != 0)
-			{
-				return -1;
-			}
-			else
-			{
-				return 0;
-			}
-		}
-		//else
-			return 0;
+		return 0;
 	}
 }
 int motion_axis_disable(axis_t index)
@@ -770,21 +718,12 @@ int motion_axis_disable(axis_t index)
 		return -1;
 	}
 
-	if (index == 2 || index == 4 || index == 5)
-	{
-		uint8_t motor_break[1] = { 0 };
-		do
-		{
-			ret = set_digital_output(motor_break, 0);
-		} while (ret != 0);
-	}
-
 	times = 0;
 	char flag = 1;
 	do
 	{
 		times++;
-		send_cmd("k");
+		send_cmd(index, "k");
 		flag = 1;
 		int ret = motion_axis_enabled(index, &flag);
 		if (0 != ret)
@@ -835,7 +774,7 @@ int motion_axis_stop(axis_t index)
 	do
 	{
 		times++;
-		send_cmd("stop");
+		send_cmd(index,"stop");
 		flag = 0;
 		int ret = motion_axis_stopped(index, &flag);
 		if (0 != ret)
@@ -887,9 +826,9 @@ int motion_axis_p2p(axis_t index, int32_t p, int32_t vel)
 	{
 		times++;
 		char buffer[256];
-		send_cmd("moveabs " + int_to_str(p) + " " + double_to_str(vel * 1.0 / 131072));
+		send_cmd(index, "moveabs " + int_to_str(p) + " " + double_to_str(vel * 1.0 / 131072 * 60));
 		flag = 0;
-		Sleep(50);
+		Sleep(100);
 		int ret = motion_axis_stopped(index, &flag);
 		if (0 != ret)
 		{
@@ -906,7 +845,20 @@ int motion_axis_p2p(axis_t index, int32_t p, int32_t vel)
 				}
 				if (flag != 0)
 				{
-					continue;
+					int32_t pos_cur = 0;
+					ret = motion_axis_position(index, &pos_cur);
+					if (0 != ret)
+					{
+						continue;
+					}
+					if (abs(pos_cur - p) < 500)
+					{
+						return 0;
+					}
+					else
+					{
+						continue;
+					}
 				}
 				else
 				{
@@ -918,7 +870,7 @@ int motion_axis_p2p(axis_t index, int32_t p, int32_t vel)
 				return 0;
 			}
 		}
-	} while (times < 100);
+	} while (times < 5);
 	return -1;
 }
 int motion_axis_home(axis_t index)
@@ -929,9 +881,9 @@ int motion_axis_move(axis_t index, int32_t vel)
 {
 
 	if (vel > 0)
-		return motion_axis_p2p(index, 214748364, vel);
+		return motion_axis_p2p(index, 2147483640, vel);
 	else
-		return motion_axis_p2p(index, -214748364, -vel);
+		return motion_axis_p2p(index, -2147483640, -vel);
 }
 int motion_axis_halt(axis_t index, char flag)
 {
@@ -1088,24 +1040,34 @@ void controller_exit(void)
 }
 int controller_connect(const char* addr, int port)
 {
-	if (serial_port.InitPort(port, 115200, 'N'))
-		return 0;
-	else
-		return -1;
+	for (int i = 0; i < SERIAL_SIZE; i++)
+	{
+		if (serial_port[i].InitPort(port+i, 115200, 'N'))
+			continue;
+		else
+			return -1;
+	}
+	return 0;
 }
 int controller_lock()
 {
-	serial_port.Enter_Critical();
-	serial_port.fifo.free();
-	serial_port.fifo.init(256);
-	serial_port.Leave_Critical();
-	serial_port.OpenListenThread();
+	for (int i = 0; i < SERIAL_SIZE; i++)
+	{
+		serial_port[i].Enter_Critical();
+		serial_port[i].fifo.free();
+		serial_port[i].fifo.init(256);
+		serial_port[i].Leave_Critical();
+		serial_port[i].OpenListenThread();
+	}
 	return 0;
 }
 int controller_unlock()
 {
-	serial_port.CloseListenTread();
-	serial_port.fifo.reset();
+	for (int i = 0; i < SERIAL_SIZE; i++)
+	{
+		serial_port[i].CloseListenTread();
+		serial_port[i].fifo.reset();
+	}
 	return 0;
 }
 

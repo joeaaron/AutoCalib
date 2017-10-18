@@ -22,7 +22,7 @@ CalibrationWidget::CalibrationWidget(QWidget* parent /* = 0 */, Qt::WindowFlags 
 void CalibrationWidget::initUi(){
 	/*Big PanTilt UI*/
 	panes.push_back(new PaneWidget(ui->bigPanTiltTab, "Inching", ":/icons/inching.png", true, false));
-	bigPanInchingWidget = new InchingWidget(panes[0]);
+	bigPanInchingWidget = new InchingWidget(panes[0], "big");
 	panes[0]->setWidget(bigPanInchingWidget, true);
 	panes[0]->expand();
 	ui->bigPanPanesLayout->addWidget(panes[0]);
@@ -36,7 +36,7 @@ void CalibrationWidget::initUi(){
 	ui->bigPanPanesLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Minimum, QSizePolicy::Expanding));
 	/*Small PanTilt UI*/
 	panes.push_back(new PaneWidget(ui->smallPanTiltTab, "Inching", ":/icons/inching.png", true, false));
-	smallPanInchingWidget = new InchingWidget(panes[2]);
+	smallPanInchingWidget = new InchingWidget(panes[2], "small");
 	panes[2]->setWidget(smallPanInchingWidget, true);
 	panes[2]->expand();
 	ui->smallPanPanesLayout->addWidget(panes[2]);

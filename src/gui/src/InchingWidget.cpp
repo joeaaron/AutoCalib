@@ -1,13 +1,25 @@
 #include "InchingWidget.h"
 #include <QMessageBox>
 #include <windows.h>
-InchingWidget::InchingWidget(QWidget* parent /* = 0 */, Qt::WindowFlags flags /* = 0 */)
+InchingWidget::InchingWidget(QWidget* parent /* = 0 */, QString name/* = 0 */, Qt::WindowFlags flags /* = 0 */)
 	:ui(new Ui::inchingWidget), 
 	panTiltPtr(new PanTilt()), 
 	axesIndex(make_shared<QVector<int>>(2, -1)),
 	axesOffset(make_shared<QVector<int>>(2, 0)),
 	updateTimer(new QTimer(this))
 {
+	if ("big" == name)
+	{
+		bBig = true;
+		reduction = 100;
+	}
+		
+	if ("small" == name)
+	{
+		bBig = false;
+		reduction = 40;
+	}
+		
 	ui->setupUi(this);
 	initUi();
 	initSignals();
@@ -25,7 +37,7 @@ void InchingWidget::initUi(){
 
 void InchingWidget::initSignals(){
 	connect(ui->startBtn, SIGNAL(toggled(bool)), this, SLOT(onStartBtnToggled(bool)));
-//	connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimerOut()));
+	connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimerOut()));
 	connect(ui->UDcheckBox, SIGNAL(stateChanged(int)), this, SLOT(onUDCheckBoxStateChanged(int)));
 	QList<QPushButton*> buttons = ui->controlBox->findChildren< QPushButton* >();
 	for (auto btn:buttons)
@@ -39,7 +51,8 @@ void InchingWidget::initSignals(){
 void InchingWidget::initVariables(){
 	panTiltPtr->setAxes(axesIndex);
 //	vel = ui->velSlider->value()*(1 << 17) / 360 * 100;		//convert to pulse/s if given a 17-bits coder
-	vel = ui->velSlider->value() * (1 << 17) / 360 * 40 * 60;		//convert to pulse/s if given a 17-bits coder
+	vel = ui->velSlider->value() * (1 << 17) / 360 * reduction;		//convert to pulse/s if given a 17-bits coder
+	_vel = ui->velSlider->value() * (1 << 17) / 360 * 40;		//convert to pulse/s if given a 17-bits coder
 }
 
 void InchingWidget::onMotionConnected(){
@@ -100,43 +113,84 @@ void InchingWidget::updateAxisOffset(DEVICE_AXIS axis, int offset){
 
 void InchingWidget::onDirectionBtnPressed(){
 	QObject* sender = QObject::sender();
+	if (bBig)
+	{
+		if (sender == ui->upBtn){
 
-	if (sender == ui->upBtn){ 
-		//if (!panTiltPtr->pitchP2P(5, -vel))
- 		if(!panTiltPtr->pitch(vel)){
-			QMessageBox::critical(this,
-				tr("Motion Error"),
-				QString("Pitch up has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-				);
+			if (!panTiltPtr->pitch(vel)){
+				QMessageBox::critical(this,
+					tr("Motion Error"),
+					QString("Pitch up has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+					);
+			}
 		}
-	}
-	else if (sender == ui->downBtn){
-		if(!panTiltPtr->pitch(-vel)){
-			QMessageBox::critical(this,
-				tr("Motion Error"),
-				QString("Pitch down has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-				);
+		else if (sender == ui->downBtn){
+			if (!panTiltPtr->pitch(-vel)){
+				QMessageBox::critical(this,
+					tr("Motion Error"),
+					QString("Pitch down has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+					);
+			}
 		}
-	}
-	else if (sender == ui->leftBtn){
-		if (!panTiltPtr->yaw(-vel)){
-			QMessageBox::critical(this,
-				tr("Motion Error"),
-				QString("Yaw left has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-				);
+		else if (sender == ui->leftBtn){
+			if (!panTiltPtr->yaw(-_vel)){
+				QMessageBox::critical(this,
+					tr("Motion Error"),
+					QString("Yaw left has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+					);
+			}
 		}
-	}
-	else if (sender == ui->rightBtn){
-		if (!panTiltPtr->yaw(vel)){
-			QMessageBox::critical(this,
-				tr("Motion Error"),
-				QString("Yaw right has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-				);
+		else if (sender == ui->rightBtn){
+			if (!panTiltPtr->yaw(_vel)){
+				QMessageBox::critical(this,
+					tr("Motion Error"),
+					QString("Yaw right has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+					);
 
+			}
 		}
+		else
+			return;
 	}
 	else
-		return;
+	{
+		if (sender == ui->upBtn){
+
+			if (!panTiltPtr->pitch(vel)){
+				QMessageBox::critical(this,
+					tr("Motion Error"),
+					QString("Pitch up has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+					);
+			}
+		}
+		else if (sender == ui->downBtn){
+			if (!panTiltPtr->pitch(-vel)){
+				QMessageBox::critical(this,
+					tr("Motion Error"),
+					QString("Pitch down has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+					);
+			}
+		}
+		else if (sender == ui->leftBtn){
+			if (!panTiltPtr->yaw(-vel)){
+				QMessageBox::critical(this,
+					tr("Motion Error"),
+					QString("Yaw left has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+					);
+			}
+		}
+		else if (sender == ui->rightBtn){
+			if (!panTiltPtr->yaw(vel)){
+				QMessageBox::critical(this,
+					tr("Motion Error"),
+					QString("Yaw right has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+					);
+
+			}
+		}
+		else
+			return;
+	}
 }
 
 void InchingWidget::onDirectionBtnReleased(){
@@ -161,53 +215,107 @@ void InchingWidget::onDirectionBtnReleased(){
 
 void InchingWidget::onUpdateTimerOut(){
 	qint32 pos, vel;
-	if (panTiltPtr->readPitchVel(&vel)){
-		vel = vel * 360 / (1 << 17) / 100;
-		ui->xVelLcdNum->display(vel);
-	}
-	else{
-		QMessageBox::critical(this,
+	if (bBig)
+	{
+		if (panTiltPtr->readPitchVel(&vel)){
+			vel = vel * 360.0 / (1 << 17) / 100;
+			ui->xVelLcdNum->display(vel);
+		}
+		else{
+			/*QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("Read pitch velocity has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
-	}
-	Sleep(100);
-	//
-	if (panTiltPtr->readYawVel(&vel)){
-		vel = vel * 360 / (1 << 17) / 100;
-		ui->zVelLcdNum->display(vel);
-	}
-	else{
-		QMessageBox::critical(this,
+			);*/
+		}
+		Sleep(100);
+		//
+		if (panTiltPtr->readYawVel(&vel)){
+			vel = vel * 360.0/ (1 << 17) / 40;
+			ui->zVelLcdNum->display(vel);
+		}
+		else{
+			/*QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("Read yaw velocity has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
-	}
-	Sleep(100);
-	//
-	if (panTiltPtr->readPitchPos(&pos)){
-		pos = (pos - (*axesOffset)[0])*360 / (1 << 17) / 100;
-		ui->xPosLcdNum->display(pos);
-	}
-	else{
-		QMessageBox::critical(this,
+			);*/
+		}
+		Sleep(100);
+		//
+		if (panTiltPtr->readPitchPos(&pos)){
+			pos = (pos) * 360.0 / (1 << 17) / 100;
+			ui->xPosLcdNum->display(pos);
+		}
+		else{
+			/*QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("Read pitch position has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
-	}
-	Sleep(100);
-	//
-	if (panTiltPtr->readYawPos(&pos)){
-		pos = (pos - (*axesOffset)[1])*360 / (1 << 17) / 100;
-		ui->zPosLcdNum->display(pos);
-	}
-	else{
-		QMessageBox::critical(this,
+			);*/
+		}
+		Sleep(100);
+		//
+		if (panTiltPtr->readYawPos(&pos)){
+			pos = (pos) * 360.0 / (1 << 17) / 40;
+			ui->zPosLcdNum->display(pos);
+		}
+		else{
+			/*QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("Read yaw position has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
+			);*/
+		}
+		Sleep(100);
 	}
-	Sleep(100);
+	else
+	{
+		if (panTiltPtr->readPitchVel(&vel)){
+			vel = vel * 360.0 / (1 << 17) / 40;
+			ui->xVelLcdNum->display(vel);
+		}
+		else{
+			/*QMessageBox::critical(this,
+			tr("Motion Error"),
+			QString("Read pitch velocity has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+			);*/
+		}
+		Sleep(100);
+		//
+		if (panTiltPtr->readYawVel(&vel)){
+			vel = vel * 360.0 / (1 << 17) / 40;
+			ui->zVelLcdNum->display(vel);
+		}
+		else{
+			/*QMessageBox::critical(this,
+			tr("Motion Error"),
+			QString("Read yaw velocity has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+			);*/
+		}
+		Sleep(100);
+		//
+		if (panTiltPtr->readPitchPos(&pos)){
+			pos = pos * 360.0 / (1 << 17) / 40;
+			ui->xPosLcdNum->display(pos);
+		}
+		else{
+			/*QMessageBox::critical(this,
+			tr("Motion Error"),
+			QString("Read pitch position has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+			);*/
+		}
+		Sleep(100);
+		//
+		if (panTiltPtr->readYawPos(&pos)){
+			pos = (pos - (*axesOffset)[1]) * 360 / (1 << 17) / 40;
+			ui->zPosLcdNum->display(pos);
+		}
+		else{
+			/*QMessageBox::critical(this,
+			tr("Motion Error"),
+			QString("Read yaw position has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+			);*/
+		}
+		Sleep(100);
+	}
+	
 }
 
 void InchingWidget::onUDCheckBoxStateChanged(int state){

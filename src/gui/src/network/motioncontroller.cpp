@@ -1,70 +1,162 @@
 #include <stdint.h>
 #include "ecatmc.h"
 #include "motioncontroller.h"
+#include <windows.h>
 using namespace ECAT::Network;
 
 MOTION_ERROR MotionController::setupNetwork(QString ip, quint16 port){
-	return MOTION_ERROR(controller_connect(ip.toLatin1().data(), port));
+	MOTION_ERROR err = MOTION_ERROR(controller_connect(ip.toLatin1().data(), port));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(controller_connect(ip.toLatin1().data(), port));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::takeControl(){
-	return MOTION_ERROR(controller_lock());
+	MOTION_ERROR err = MOTION_ERROR(controller_lock());
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(controller_lock());
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::releaseControl(){
-	return MOTION_ERROR(controller_unlock());
+	MOTION_ERROR err = MOTION_ERROR(controller_unlock());
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(controller_unlock());
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::enableAxis(int index){
-	return MOTION_ERROR(motion_axis_enable(index));
+	MOTION_ERROR err = MOTION_ERROR(motion_axis_enable(index));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(motion_axis_enable(index));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::disableAxis(int index){
-	return MOTION_ERROR(motion_axis_disable(index));
+	MOTION_ERROR err = MOTION_ERROR(motion_axis_disable(index));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(motion_axis_disable(index));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::readAxisError(int index, qint32* error){
-	return MOTION_ERROR(motion_axis_error_code(index,error));
+	MOTION_ERROR err = MOTION_ERROR(motion_axis_error_code(index, error));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(motion_axis_error_code(index, error));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::readAxisEnabled(int index, char* flag){
-	return MOTION_ERROR(motion_axis_enabled(index,flag));
+	MOTION_ERROR err = MOTION_ERROR(motion_axis_enabled(index, flag));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(motion_axis_enabled(index, flag));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::readAxisStopped(int index, char* flag){
-	return MOTION_ERROR(motion_axis_stopped(index, flag));
+	MOTION_ERROR err = MOTION_ERROR(motion_axis_stopped(index, flag));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(motion_axis_stopped(index, flag));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::moveAxis(int index, qint32 vel){
-	return MOTION_ERROR(motion_axis_move(index,vel));
+	MOTION_ERROR err = MOTION_ERROR(motion_axis_move(index, vel));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(motion_axis_move(index, vel));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::stopAxis(int index){
-	return MOTION_ERROR(motion_axis_stop(index));
+	MOTION_ERROR err = MOTION_ERROR(motion_axis_stop(index));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(motion_axis_stop(index));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::waitAxisFinished(int index){
-	return MOTION_ERROR(motion_axis_wait_finished(index));
+	MOTION_ERROR err = MOTION_ERROR(motion_axis_wait_finished(index));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(motion_axis_wait_finished(index));
+	}
+	return err;
+
 }
 
 MOTION_ERROR MotionController::p2pAxis(int index, qint32 pos, qint32 vel){
-	return MOTION_ERROR(motion_axis_p2p(index, pos, vel));
+	int times = 0;
+	MOTION_ERROR err = MOTION_ERROR_NONE;
+	do 
+	{
+		times++;
+		err = MOTION_ERROR(motion_axis_p2p(index, pos, vel));
+		if (MOTION_ERROR_NONE == err)
+		{
+			return MOTION_ERROR_NONE;
+		}
+		Sleep(50);
+		MOTION_ERROR(motion_axis_stop(index));
+		Sleep(50);
+	} while (times < 5);
+	return err;
 }
 
 MOTION_ERROR MotionController::homeAxis(int index){
-	return MOTION_ERROR(motion_axis_home(index));
+	MOTION_ERROR err = MOTION_ERROR(motion_axis_home(index));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(motion_axis_home(index));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::readAxisHomeMethod(int index, qint32* method){
-	return MOTION_ERROR(motion_axis_get_home_method(index, method));
+	MOTION_ERROR err = MOTION_ERROR(motion_axis_get_home_method(index, method));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(motion_axis_get_home_method(index, method));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::readAxisPostion(int index, qint32* pos){
-	return MOTION_ERROR(motion_axis_position(index, pos));
+	MOTION_ERROR err = MOTION_ERROR(motion_axis_position(index, pos));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(motion_axis_position(index, pos));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::readAxisVelocity(int index, qint32* vel){
-	return MOTION_ERROR(motion_axis_velocity(index,vel));
+
+	MOTION_ERROR err = MOTION_ERROR(motion_axis_velocity(index, vel));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(motion_axis_velocity(index, vel));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::createGroup(int *index, size_t size, void** group, const char* name){
@@ -96,9 +188,19 @@ MOTION_ERROR MotionController::p2pMotion(void** group, qint32* pos, qint32* vel,
 }
 
 MOTION_ERROR MotionController::setDigitalIO(quint8 *data, quint32 size){
-	return MOTION_ERROR(set_digital_output(data, size));
+	MOTION_ERROR err = MOTION_ERROR(set_digital_output(data, size));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(set_digital_output(data, size));
+	}
+	return err;
 }
 
 MOTION_ERROR MotionController::digitalIOSize(quint32* size){
-	return MOTION_ERROR(digital_output_size(size));
+	MOTION_ERROR err = MOTION_ERROR(digital_output_size(size));
+	if (MOTION_ERROR_NONE != err)
+	{
+		err = MOTION_ERROR(digital_output_size(size));
+	}
+	return err;
 }

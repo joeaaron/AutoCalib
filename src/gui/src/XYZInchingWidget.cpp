@@ -22,7 +22,7 @@ void XYZInchingWidget::initUi(){
 
 void XYZInchingWidget::initSignals(){
 	connect(ui->startBtn, SIGNAL(toggled(bool)), this, SLOT(onStartBtnToggled(bool)));
-	//connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimerOut()));
+	connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimerOut()));
 
 	QList<QPushButton*> buttons = ui->controlBox->findChildren< QPushButton* >();
 	for (auto btn : buttons)
@@ -100,7 +100,7 @@ void XYZInchingWidget::onDirectionBtnPressed(){
 		if (sender == ui->leftBtn)
 			linearVel = -linearVel;
 		//need conversion to motor speed
-		linearVel = linearVel * (1 << 17) / 45 * 60;
+		linearVel = linearVel * (1 << 17) / 45;
 		if (!xyzPtr->moveX(linearVel)){
 			QMessageBox::critical(this,
 				tr("Motion Error"),
@@ -114,7 +114,7 @@ void XYZInchingWidget::onDirectionBtnPressed(){
 			linearVel = -linearVel;
 		//need conversion to motor speed
 		//linearVel = linearVel * 10000 / M_PI / 23.87 * 3;
-		linearVel = linearVel * (1 << 17) / 20 * 60;
+		linearVel = linearVel * (1 << 17) / 20;
 		if (!xyzPtr->moveY(linearVel)){
 			QMessageBox::critical(this,
 				tr("Motion Error"),
@@ -127,7 +127,7 @@ void XYZInchingWidget::onDirectionBtnPressed(){
 		if (sender == ui->upBtn)
 			linearVel = -linearVel;
 		//need conversion to motor speed
-		linearVel = linearVel * (1 << 17) / 10 * 60;
+		linearVel = linearVel * (1 << 17) / 10;
 		if (!xyzPtr->moveZ(linearVel)){
 			QMessageBox::critical(this,
 				tr("Motion Error"),
@@ -140,7 +140,7 @@ void XYZInchingWidget::onDirectionBtnPressed(){
 		if (sender == ui->clockwiseBtn)
 			angularVel = -angularVel;
 		//angularVel = angularVel * 10000 / 360 * 120;
-		angularVel = angularVel *(1 << 17) / 360 * 100 * 60;
+		angularVel = angularVel * (1 << 17) / 360 * 100;
 		if (!xyzPtr->moveR(angularVel)){
 			QMessageBox::critical(this,
 				tr("Motion Error"),
@@ -199,90 +199,90 @@ void XYZInchingWidget::onUpdateTimerOut(){
 	qint32 pos, vel;
 	// X-Axis
 	if (xyzPtr->readXPos(&pos)){
-		pos = pos * M_PI * 23.87 / 10000 / 3;
+		pos = pos * 45.0 / (1 << 17) ;
 		ui->xPosLcdNum->display(pos);
 	}
 	else{
-		QMessageBox::critical(this,
+		/*QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("Read X position has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
+			);*/
 	}
 
 	if (xyzPtr->readXVel(&vel)){
-		vel = vel * M_PI * 23.87 / 10000 / 3;
+		vel = vel * 45.0 / (1 << 17);
 		ui->xVelLcdNum->display(vel);
 	}
 	else{
-		QMessageBox::critical(this,
+		/*QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("Read X velocity has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
+			);*/
 	}
 	// Y-Axis
 	if (xyzPtr->readYPos(&pos)){
-		pos = pos * M_PI * 23.87 / 10000 / 3;
+		pos = pos * 20.0 / (1 << 17);
 		ui->yPosLcdNum->display(pos);
 	}
 	else{
-		QMessageBox::critical(this,
+		/*QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("Read Y position has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
+			);*/
 	}
 
 	if (xyzPtr->readYVel(&vel)){
-		vel = vel * M_PI * 23.87 / 10000 / 3;
+		vel = vel * 20.0 / (1 << 17);
 		ui->yVelLcdNum->display(vel);
 	}
 	else{
-		QMessageBox::critical(this,
+		/*QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("Read Y velocity has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
+			);*/
 	}
 	// Z-Axis
 	if (xyzPtr->readZPos(&pos)){
-		pos = pos * M_PI * 23.87 / 10000 / 40;
+		pos = pos * 10.0 / (1 << 17);
 		ui->zPosLcdNum->display(pos);
 	}
 	else{
-		QMessageBox::critical(this,
+		/*QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("Read Z position has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
+			);*/
 	}
 
 	if (xyzPtr->readZVel(&vel)){
-		vel = vel * M_PI * 23.87 / 10000 / 40;
+		vel = vel * 10.0 / (1 << 17);
 		ui->zVelLcdNum->display(vel);
 	}
 	else{
-		QMessageBox::critical(this,
+		/*QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("Read Z velocity has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
+			);*/
 	}
 	// R-Axis
 	if (xyzPtr->readRPos(&pos)){
-		pos = pos * 360 / 10000 / 120;
+		pos = pos * 360.0  / (1 << 17) / 100;
 		ui->rPosLcdNum->display(pos);
 	}
 	else{
-		QMessageBox::critical(this,
+		/*QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("Read R position has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
+			);*/
 	}
 
 	if (xyzPtr->readRVel(&vel)){
-		vel = vel * 360 / 10000 / 120;
+		vel = vel * 360.0 / (1 << 17) / 100;
 		ui->rVelLcdNum->display(vel);
 	}
 	else{
-		QMessageBox::critical(this,
+		/*QMessageBox::critical(this,
 			tr("Motion Error"),
 			QString("Read R velocity has errors at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
-			);
+			);*/
 	}
 }
