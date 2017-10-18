@@ -42,6 +42,7 @@ public:
 	cv::Mat QImage2cvMat(QImage image);
 	void triggerPush(QString pushCommand);
 	void pushFiles();
+	void cowaCalib();
 signals:
 	void Connect();
 	void Import();
@@ -115,6 +116,7 @@ private:
 	double imgArea;
 
 	std::thread motionThread;
+	std::thread calibThread;
 	bool isSaveImage;
 	QMutex pause;
 public:
