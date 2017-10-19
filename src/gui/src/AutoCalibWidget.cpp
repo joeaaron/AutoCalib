@@ -18,6 +18,7 @@ const int SMALLPANSIZE = 24;
 const int BIGPANSIZE = 20;
 const int SAVEDIRNUM = 8; 
 const int CAMERAS = 4;
+const int FALLLASER = 5;
 const QString p[] = { "UP", "DOWN", "MIDDLE", "LEFT", "RIGHT" };
 enum chessBoardPos{
 	POS_UP,
@@ -80,6 +81,7 @@ void AutoCalibWidget::InitSignals()
 	connect(this, SIGNAL(ReachLocation(qint32, bool)), this, SLOT(onImgTook(qint32, bool)));
 	connect(this, SIGNAL(progValue(double)), this, SLOT(onValueChanged(double)));
 	connect(this, SIGNAL(openTopLaser()), this, SLOT(onOpenTopLaser()));
+	connect(this, SIGNAL(openTopFallLaser()), this, SLOT(onOpenTopFallLaser()));
 	connect(this, SIGNAL(openBottomLaser()), this, SLOT(onOpenBottomLaser()));
 	connect(this, SIGNAL(getDeviation()), this, SLOT(onGetDeviation()));
 
@@ -183,6 +185,10 @@ void AutoCalibWidget::onOpenBottomLaser(){
 
 void AutoCalibWidget::onOpenTopLaser(){
 	CMDParser::getInstance().openTopLaser();
+}
+
+void AutoCalibWidget::onOpenTopFallLaser(){
+	CMDParser::getInstance().openFallTopLaser();
 }
 
 void AutoCalibWidget::onGetDeviation(){
@@ -1135,7 +1141,7 @@ void AutoCalibWidget::cowaCalib()
 
 	const char* dstPath = "D:\\calibFiles\\cowa_R1";
 
-	for (int i = 5; i <= 8; i++)
+	for (int i = 1; i <= 8; i++)
 	{
 		if (3 == i || 7 == i)
 			continue;
@@ -1280,6 +1286,56 @@ void AutoCalibWidget::cowaCalib()
 	File::copyDir(dirPath.c_str(), dstPath);
 }
 
+void AutoCalibWidget::onTopFallLaserCalib()
+{
+	emit openTopFallLaser(); 
+	for (int j = 0; j < FALLLASER; ++j)
+	{
+		qint32 expSmallPitchPos = smallpan_xPoint.at(j) * (1 << 17) / 360 * 40;
+		qint32 expSmallYawPos = smallpan_zPoint.at(j)* (1 << 17) / 360 * 40;
+		qint32 expSmallVel = 20 * (1 << 17) / 360 * 40;
+
+		if (!smallPanTiltPtr->pitchP2P(expSmallPitchPos, expSmallVel)){
+			QMessageBox::critical(this,
+				tr("Motion Error"),
+				QString("SmallPantilt pitchP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+				);
+			return;
+		}
+		smallPanTiltPtr->waitFinished(smallaxesIndex->at(0));
+
+		if (!smallPanTiltPtr->yawP2P(expSmallYawPos, expSmallVel)){
+			QMessageBox::critical(this,
+				tr("Motion Error"),
+				QString("SmallPantilt yawP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+				);
+			return;
+		}
+		smallPanTiltPtr->waitFinished(smallaxesIndex->at(1));
+
+		onLightSwitch(true);
+		sleep(3000);
+		emit ReachLocation(0, false);
+		while (!recvFinish)
+		{
+			sleep(100);
+		}
+		recvFinish = false;
+		//sleep(3000);           
+
+		onLightSwitch(false);
+		sleep(3000);
+		emit ReachLocation(8, true);
+		while (!recvFinish)
+		{
+			sleep(100);
+		}
+		recvFinish = false;
+	}
+
+	suitcaseMotion(5);
+}
+
 void AutoCalibWidget::onMotionStart(){
 	//go home
 	/*xyzPtr->home(xyzaxesIndex->at(0));
@@ -1301,6 +1357,8 @@ void AutoCalibWidget::onMotionStart(){
 		//calib using the big board
 		onLargeBoardMotion();
 	
+	//fall laser calib
+	onTopFallLaserCalib();
 	//onSmallBoardMotionPro();
 	onStartBtnToggled(false);
 	//calib the files

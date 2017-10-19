@@ -43,6 +43,7 @@ public:
 	void triggerPush(QString pushCommand);
 	void pushFiles();
 	void cowaCalib();
+	void onTopFallLaserCalib();
 signals:
 	void Connect();
 	void Import();
@@ -51,6 +52,7 @@ signals:
 	void progValue(double value);
 	void openBottomLaser();
 	void openTopLaser();
+	void openTopFallLaser();
 	void getDeviation();
 private slots:
 	void onConnectClicked();
@@ -69,6 +71,7 @@ private slots:
 	void onValueChanged(double progress);
 	void onOpenBottomLaser();
 	void onOpenTopLaser();
+	void onOpenTopFallLaser();
 	void onBoardCheckBoxStateChanged(int);
 private:
     Ui::AutoCalibWidget *ui;
