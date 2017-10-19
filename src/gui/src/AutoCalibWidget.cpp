@@ -173,7 +173,8 @@ void AutoCalibWidget::onTestBtnClicked(){
 
 	calib.GetDeviationPara(dst, para);*/
 	//qDebug() << xyz_xPoint_2.at(0);
-	
+	onCalibBtnClicked();
+	pushFiles();
 }
 
 void AutoCalibWidget::onOpenBottomLaser(){
@@ -580,13 +581,14 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 		
 		if (!isSaveImage)
 		{
-			srcImg = QImage2cvMat(image);
-			Calib::GetDeviationPara(srcImg, para);
+			//srcImg = QImage2cvMat(image);
+			//Calib::GetDeviationPara(srcImg, para);
+			saveImg(camera);
 		}
 		
 		//saveImg
-		else
-			saveImg(camera);
+		/*else
+			saveImg(camera);*/
 		
 		recvFinish = true;
 		//ui->displayBtn->setEnabled(true);
@@ -871,8 +873,9 @@ void AutoCalibWidget::onSmallBoardMotionPro()
 
 void AutoCalibWidget::onSmallBoardMotion()
 {
+	isSaveImage = false;
 	chessBoardPos pos;
-	//emit openTopLaser();
+	emit openTopLaser();
 	QString value = ui->sCamlineEdit->text();
 	qint32 camID = value.toInt();
 
@@ -893,7 +896,7 @@ void AutoCalibWidget::onSmallBoardMotion()
 */
 			qint32 expSmallPitchPos = smallpan_xPoint.at(j + (i - 1) * 6) * (1 << 17) / 360 * 40 ;
 			qint32 expSmallYawPos = smallpan_zPoint.at(j + (i - 1) * 6)* (1 << 17) / 360 * 40 ;
-			qint32 expSmallVel = 10 * (1 << 17) / 360 * 40;
+			qint32 expSmallVel = 20 * (1 << 17) / 360 * 40;
 
 			if (!smallPanTiltPtr->pitchP2P(expSmallPitchPos, expSmallVel)){
 				QMessageBox::critical(this,
@@ -990,10 +993,23 @@ void AutoCalibWidget::onSmallBoardMotion()
 		QString logInfo3 = QString("top %1 camera-laser calibration finished !").arg(i);
 		printLog(i, logInfo3);
 	}
+	//avoid the collision happened between chessboard and motor
+	qint32 smallPitchPos = 21 * (1 << 17) / 360 * 40;
+	qint32 smallYawPos = 52 * (1 << 17) / 360 * 40;
+	qint32 smallVel = 25 * (1 << 17) / 360 * 40;
+	if (!smallPanTiltPtr->pitchP2P(smallPitchPos, smallVel)){
+		QMessageBox::critical(this,
+			tr("Motion Error"),
+			QString("SmallPantilt pitchP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+			);
+		return;
+	}
+	smallPanTiltPtr->waitFinished(smallaxesIndex->at(0));
 }
 
 void AutoCalibWidget::onLargeBoardMotion()
 {
+	isSaveImage = false;
 	smallPanSaveFinish = true;
 	chessBoardPos pos;
 
@@ -1119,7 +1135,7 @@ void AutoCalibWidget::cowaCalib()
 
 	const char* dstPath = "D:\\calibFiles\\cowa_R1";
 
-	for (int i = 1; i <= 8; i++)
+	for (int i = 5; i <= 8; i++)
 	{
 		if (3 == i || 7 == i)
 			continue;
@@ -1287,10 +1303,11 @@ void AutoCalibWidget::onMotionStart(){
 	
 	//onSmallBoardMotionPro();
 	onStartBtnToggled(false);
-	//terminate the procedure
-	onStopBtnClicked();
 	//calib the files
-	onTestBtnClicked();
+	onCalibBtnClicked();
+	//terminate the procedure
+	//onStopBtnClicked();
+	
 }
 
 void AutoCalibWidget::onStartBtnToggled(bool checked){
