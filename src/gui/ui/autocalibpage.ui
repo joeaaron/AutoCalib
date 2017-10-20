@@ -301,22 +301,29 @@
             </layout>
            </item>
            <item row="0" column="2">
+            <widget class="QCheckBox" name="fallCheckBox">
+             <property name="text">
+              <string>F/NF</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="3">
             <spacer name="horizontalSpacer">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>201</width>
-               <height>17</height>
+               <width>198</width>
+               <height>49</height>
               </size>
              </property>
             </spacer>
            </item>
-           <item row="0" column="3">
+           <item row="0" column="4">
             <widget class="QLineEdit" name="offsetlineEdit"/>
            </item>
-           <item row="0" column="4">
+           <item row="0" column="5">
             <widget class="QPushButton" name="displayBtn">
              <property name="enabled">
               <bool>true</bool>
@@ -333,7 +340,7 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="5">
+           <item row="0" column="6">
             <widget class="QPushButton" name="saveImgBtn">
              <property name="enabled">
               <bool>false</bool>
@@ -350,7 +357,7 @@
              </property>
             </widget>
            </item>
-           <item row="0" column="6">
+           <item row="0" column="7">
             <widget class="QPushButton" name="testBtn">
              <property name="font">
               <font>

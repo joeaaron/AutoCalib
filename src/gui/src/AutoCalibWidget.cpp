@@ -13,7 +13,7 @@
 #include <fstream>
 #include <windows.h>
 
-const int LUGGAGESIZE = 17;
+const int LUGGAGESIZE = 18;
 const int SMALLPANSIZE = 24;
 const int BIGPANSIZE = 20;
 const int SAVEDIRNUM = 8; 
@@ -86,6 +86,7 @@ void AutoCalibWidget::InitSignals()
 	connect(this, SIGNAL(getDeviation()), this, SLOT(onGetDeviation()));
 
 	connect(ui->boardCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onBoardCheckBoxStateChanged(int)));
+	connect(ui->fallCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onFallCheckBoxStateChanged(int)));
 }
 
 AutoCalibWidget::~AutoCalibWidget()
@@ -111,6 +112,7 @@ void AutoCalibWidget::initVariables(){
 	recvFinish = false;
 	isSaveImage = true;
 	isSmallBoardCalibrated = false;
+	isFallLaserCalibrate = false;
 	bGetDeviation = false;
 	//bin to the ptr
 	bigaxesIndex->push_back(5);
@@ -163,6 +165,14 @@ void AutoCalibWidget::onBoardCheckBoxStateChanged(int state)
 		isSmallBoardCalibrated = false;
 	else
 		isSmallBoardCalibrated = true;
+}
+
+void AutoCalibWidget::onFallCheckBoxStateChanged(int state)
+{
+	if (Qt::Unchecked == state)
+		isFallLaserCalibrate = false;
+	else
+		isFallLaserCalibrate = true;
 }
 
 void AutoCalibWidget::onTestBtnClicked(){
@@ -252,7 +262,7 @@ void AutoCalibWidget::updatePoints(){
 	QString bigPan_xEntries = bigpan_xList.at(0);
 	QString bigPan_zEntries = bigpan_zList.at(0);
 
-	while (xyz_xPoint_1.size() < LUGGAGESIZE - 5)
+	while (xyz_xPoint_1.size() < LUGGAGESIZE - 6)
 	{
 		int xyz_xSize = xyz_xEntries_1.size();
 		int xyz_xPos = xyz_xEntries_1.indexOf(' ');
@@ -275,7 +285,7 @@ void AutoCalibWidget::updatePoints(){
 		xyz_rEntries_1 = xyz_rEntries_1.right(xyz_rSize - xyz_rPos - 1);
 	}
 
-	while (xyz_xPoint_2.size() < 5)
+	while (xyz_xPoint_2.size() < 6)
 	{
 		int xyz_xSize = xyz_xEntries_2.size();
 		int xyz_xPos = xyz_xEntries_2.indexOf(' ');
@@ -521,8 +531,8 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 		expRPos = xyz_rPoint_2.at(i) * (1 << 17) / 360 * 100;
 	}
 	
-	expXVel = 40 * (1 << 17) / 45;
-	expYVel = 40 * (1 << 17) / 20;
+	expXVel = 45 * (1 << 17) / 45;
+	expYVel = 45 * (1 << 17) / 20;
 	expZVel = 50  * (1 << 17) / 10;
 	expRVel = 55 * (1 << 17) / 360 * 100;					//INCREMENTAL ENCODER
 	//expRVel = 5 * (1 << 17) / 360 * 100;					//ABSOLUTE ENCODER
@@ -1059,7 +1069,7 @@ void AutoCalibWidget::onLargeBoardMotion()
 			}
 			bigPanTiltPtr->waitFinished(bigaxesIndex->at(1));
 
-			sleep(5000);
+			sleep(2000);
 			onLightSwitch(true);
 			sleep(5000);
 			emit ReachLocation(i + 8 - 1, false);       //Merge into a function
@@ -1071,7 +1081,7 @@ void AutoCalibWidget::onLargeBoardMotion()
 			//sleep(3000);
 
 			onLightSwitch(false);
-			sleep(5000);
+			sleep(3000);
 			emit ReachLocation(i - 1, true);				 //Merge into a function
 			while (!recvFinish)
 			{
@@ -1113,7 +1123,7 @@ void AutoCalibWidget::onLargeBoardMotion()
 		QString logInfo3 = QString("bottom %1 camera-laser calibration finished !").arg(i);
 		printLog(i + 4, logInfo3);
 	}
-	suitcaseMotion(4);
+	suitcaseMotion(endPoint);
 	bigPanSaveFinish = true;
 }
 
@@ -1289,6 +1299,7 @@ void AutoCalibWidget::cowaCalib()
 void AutoCalibWidget::onTopFallLaserCalib()
 {
 	emit openTopFallLaser(); 
+	savePath = "./images/top";
 	for (int j = 0; j < FALLLASER; ++j)
 	{
 		qint32 expSmallPitchPos = smallpan_xPoint.at(j) * (1 << 17) / 360 * 40;
@@ -1315,7 +1326,7 @@ void AutoCalibWidget::onTopFallLaserCalib()
 
 		onLightSwitch(true);
 		sleep(3000);
-		emit ReachLocation(0, false);
+		emit ReachLocation(2, false);
 		while (!recvFinish)
 		{
 			sleep(100);
@@ -1325,7 +1336,7 @@ void AutoCalibWidget::onTopFallLaserCalib()
 
 		onLightSwitch(false);
 		sleep(3000);
-		emit ReachLocation(8, true);
+		emit ReachLocation(10, true);
 		while (!recvFinish)
 		{
 			sleep(100);
@@ -1333,7 +1344,28 @@ void AutoCalibWidget::onTopFallLaserCalib()
 		recvFinish = false;
 	}
 
-	suitcaseMotion(5);
+	onLightSwitch(true);
+
+	smallPanSaveFinish = false;
+	suitcaseMotion(1);
+	sleep(3000);
+	emit ReachLocation(2, false);       //Merge into a function
+	while (!recvFinish)
+	{
+		sleep(100);
+	}
+	recvFinish = false;
+
+	suitcaseMotion(2);
+	sleep(3000);
+	emit ReachLocation(2, false);       //Merge into a function
+	while (!recvFinish)
+	{
+		sleep(100);
+	}
+
+	smallPanSaveFinish = true;
+	suitcaseMotion(endPoint);
 }
 
 void AutoCalibWidget::onMotionStart(){
@@ -1354,11 +1386,22 @@ void AutoCalibWidget::onMotionStart(){
 	}
 		
 	else
-		//calib using the big board
-		onLargeBoardMotion();
-	
-	//fall laser calib
-	onTopFallLaserCalib();
+	{
+		if (isFallLaserCalibrate)
+		{
+			endPoint = 4;
+			//calib using the big board
+			onLargeBoardMotion();
+			onTopFallLaserCalib();       			//fall laser calib
+		}
+		else
+		{
+			endPoint = 5;
+			//calib using the big board
+			onLargeBoardMotion();
+		}
+	}
+		
 	//onSmallBoardMotionPro();
 	onStartBtnToggled(false);
 	//calib the files

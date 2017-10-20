@@ -28,6 +28,15 @@ NetworkWidget::~NetworkWidget(){
 void NetworkWidget::initUi(){
 	// init sensor host 127.0.0.1
 	ui->visionHostCombo->addItem("192.168.1.101");
+	ui->visionHostCombo->addItem("192.168.1.102");
+	ui->visionHostCombo->addItem("192.168.1.103");
+	ui->visionHostCombo->addItem("192.168.1.104");
+	ui->visionHostCombo->addItem("192.168.1.105");
+	ui->visionHostCombo->addItem("192.168.1.106");
+	ui->visionHostCombo->addItem("192.168.1.107");
+	ui->visionHostCombo->addItem("192.168.1.108");
+	ui->visionHostCombo->addItem("192.168.1.109");
+	ui->visionHostCombo->addItem("192.168.1.110");
 	ui->visionHostCombo->addItem("127.0.0.1");
 	// init sensor port 6000
 	ui->visionPortLineEdit->setValidator(new QIntValidator(1, 65535, this));

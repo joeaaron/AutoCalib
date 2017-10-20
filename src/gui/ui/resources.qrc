@@ -52,6 +52,7 @@
 	<file>images/cry.png</file>
 	<file>images/smile.png</file>
 	<file>images/right.png</file>
+	<file>images/robot.png</file>
   </qresource>
   <qresource prefix="small">
     <file>images/expand.png</file>

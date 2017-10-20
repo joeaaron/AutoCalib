@@ -73,6 +73,7 @@ private slots:
 	void onOpenTopLaser();
 	void onOpenTopFallLaser();
 	void onBoardCheckBoxStateChanged(int);
+	void onFallCheckBoxStateChanged(int);
 private:
     Ui::AutoCalibWidget *ui;
 	QMap<DEVICE_AXIS, int> deviceAxesMap;
@@ -105,6 +106,7 @@ private:
 
 	DisplayView* displayView;
 	qint32 cameraID, num;
+	qint32 endPoint;
 	QImage imageToSave;
 	QString savePath, saveDir;
 
@@ -113,6 +115,7 @@ private:
 	bool recvFinish;
 	bool bGetDeviation;
 	bool isSmallBoardCalibrated;
+	bool isFallLaserCalibrate;
 
 	double calibValue;
 	double lrOffset, udOffset, areaOffset;

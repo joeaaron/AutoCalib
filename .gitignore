@@ -567,3 +567,12 @@ build/src/gui/log/Error20171019-095028.8420
 build/src/gui/log/Error20171019-094548.2872
 build/src/gui/log/Warning20171019-162952.3060
 build/src/gui/log/Info20171019-162952.3060
+build/src/gui/robot.png
+build/src/gui/resource.h
+build/src/gui/icon1.ico
+build/src/gui/gui.rc
+build/src/gui/gui.dir/Debug/gui.tlog/rc.write.1.tlog
+build/src/gui/gui.dir/Debug/gui.tlog/rc.read.1.tlog
+build/src/gui/gui.dir/Debug/gui.tlog/rc.command.1.tlog
+build/src/gui/gui.dir/Debug/gui.res
+build/src/gui/gui.aps

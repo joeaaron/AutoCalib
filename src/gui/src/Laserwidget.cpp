@@ -217,11 +217,11 @@ void LaserWidget::addCoordinate(QPaintDevice *pPaintDev, QRect rect)
 	int width = rect.width();
 	int height = rect.height();
 
-	laserCenterX = rectX + width/ 2;
-	laserCenterY = rectY + height/ 2;
+	laserCenterX = rectX + width/ 3;
+	laserCenterY = rectY + height/ 3;
 	int radiusCnt = 4;
-	int radiusX = width / 2;
-	int radiusY = height / 2;
+	int radiusX = width / 3;
+	int radiusY = height / 3;
 	laserRadius = radiusX < radiusY ? radiusX : radiusY;
 
 	QPainter painter(pPaintDev);
