@@ -632,36 +632,39 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 		srcImg = QImage2cvMat(image);
 		//Calib::GetDeviationPara(srcImg, para);
 		Image::ImgAvgGrayValue(srcImg, bFind);
+		if (!isSaveImage)
+		{
+			if (!smallPanSaveFinish)
+			{
+				if (camera < 5)
+				{
+					while (!bFind)
+					{
+						CMDParser::getInstance().requestImage({ camera });            //take a picture again
+						displayView->showImage(image);
+					}
+					saveImg(camera);
+				}
+				else
+					saveImg(camera);
+			}
 
-		if (!smallPanSaveFinish)
-		{
-			if (camera < 5)
-			{
-				while (!bFind)
-				{
-					CMDParser::getInstance().requestImage({ camera });            //take a picture again
-					displayView->showImage(image);
-				}
-				saveImg(camera);
-			}
+			//saveImg
 			else
-				saveImg(camera);
-		}
-		
-		//saveImg
-		else
-		{
-			if (camera > 5)
 			{
-				while (!bFind)
+				if (camera > 5)
 				{
-					CMDParser::getInstance().requestImage({ camera });            //take a picture again
-					displayView->showImage(image);
+					while (!bFind)
+					{
+						CMDParser::getInstance().requestImage({ camera });            //take a picture again
+						displayView->showImage(image);
+					}
+					saveImg(camera);
 				}
-				saveImg(camera);
+				else
+					saveImg(camera);
 			}
-			else
-				saveImg(camera);
+
 		}
 		
 		recvFinish = true;
