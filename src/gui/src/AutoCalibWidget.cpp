@@ -185,8 +185,17 @@ void AutoCalibWidget::onTestBtnClicked(){
 
 	calib.GetDeviationPara(dst, para);*/
 	//qDebug() << xyz_xPoint_2.at(0);
-	onCalibBtnClicked();
+	//onCalibBtnClicked();
 	pushFiles();
+
+	//bool bFind;
+	//cv::Mat srcImg = cv::imread("./temp/x2.bmp");
+	//if (srcImg.empty())
+	//{
+	//	return;
+	//}
+	//Calib::FindBoardCorner(srcImg, bFind);
+	//qDebug() << bFind;
 }
 
 void AutoCalibWidget::onOpenBottomLaser(){
@@ -597,8 +606,13 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 		
 		if (!isSaveImage)
 		{
-			//srcImg = QImage2cvMat(image);
+			srcImg = QImage2cvMat(image);
 			//Calib::GetDeviationPara(srcImg, para);
+			Calib::FindBoardCorner(srcImg, bFind);
+			while (!bFind)
+			{
+				CMDParser::getInstance().requestImage({ camera });            //take a picture again
+			}
 			saveImg(camera);
 		}
 		
@@ -611,25 +625,31 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 	}
 }
 
-void AutoCalibWidget::triggerPush(QString pushCommand)
+void AutoCalibWidget::triggerPush(QString pushCommand, qint32 time)
 {
 	CMDParser::getInstance().adbCommand(pushCommand);
-	sleep(10000);
+	sleep(time);
 }
 
 void AutoCalibWidget::pushFiles()
 {
+	int pushTimeConsuming;       
+
 	QString binFilesCommand("adb push .\images\cowa_cam_config\aligned /data/cowa_cam_config");
-	triggerPush(binFilesCommand);
+	pushTimeConsuming = 10000;
+	triggerPush(binFilesCommand, pushTimeConsuming);
 
 	QString yDividingCommand("adb push yDividing.txt /data/cowa_cam_config");
-	triggerPush(yDividingCommand);
+	pushTimeConsuming = 2000;
+	triggerPush(yDividingCommand, pushTimeConsuming);
 
 	QString cowarobotCommand("adb push cowarobot /system/bin");
-	triggerPush(cowarobotCommand);
+	pushTimeConsuming = 2000;
+	triggerPush(cowarobotCommand, pushTimeConsuming);
 
 	QString cameraScCommand("adb push camera.sc8830.so /system/lib/hw");
-	triggerPush(cameraScCommand);
+	pushTimeConsuming = 2000;
+	triggerPush(cameraScCommand, pushTimeConsuming);
 
 }
 
@@ -1270,9 +1290,9 @@ void AutoCalibWidget::cowaCalib()
 		out.open(outDir + "\\" + outBinFileName, std::ios_base::out | std::ios_base::binary);
 		while (!in.eof())
 		{
-			in.read(buffer, 256);       //从文件中读取256个字节的数据到缓存区  
-			int n = in.gcount();             //由于最后一行不知读取了多少字节的数据，所以用函数计算一下。  
-			out.write(buffer, n);       //写入那个字节的数据  
+			in.read(buffer, 256);			//从文件中读取256个字节的数据到缓存区  
+			int n = in.gcount();			//由于最后一行不知读取了多少字节的数据，所以用函数计算一下。  
+			out.write(buffer, n);			 //写入那个字节的数据  
 		}
 		in.close();
 		out.close();
@@ -1280,18 +1300,15 @@ void AutoCalibWidget::cowaCalib()
 		cv::destroyAllWindows();
 	}
 
+	/*std::cout << "Press any key to continue!" << std::endl;
+	getchar();*/
 	//get the current dir
+	
 	char buffer[1000];
 	GetCurrentDirectory(1000, buffer);
 	std::cout << buffer << std::endl;
-
-	//pushFiles();
-
-	std::cout << "Press any key to continue!" << std::endl;
-	getchar();
 	///adb push .bin files to suitcase
-	//QString triggerCmd("adb push outDir\. /data/cowa_cam_config"), output;
-	//bool ret = CMDParser::getInstance().adbCommand(triggerCmd, output);
+	//pushFiles();  //to be finished
 
 	File::copyDir(dirPath.c_str(), dstPath);
 }
@@ -1392,7 +1409,8 @@ void AutoCalibWidget::onMotionStart(){
 			endPoint = 4;
 			//calib using the big board
 			onLargeBoardMotion();
-			onTopFallLaserCalib();       			//fall laser calib
+			//fall laser calib
+			onTopFallLaserCalib();       		
 		}
 		else
 		{

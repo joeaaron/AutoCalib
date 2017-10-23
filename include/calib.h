@@ -25,6 +25,7 @@ namespace JA{
 			static int RunHandEyesCalib(const std::string inputStereoDataFile, float inputRotationAngle, const std::string outputHandEyesFile);
 			static int RunTableChange(const std::string inputBinFile, const std::string inputHandEyesFile, const std::string inputLaserCameraFile, float offsetAngle_rad, char bRotate180, const std::string outputBinFile, char bCheckWorldCoordinate = 1);
 			static std::vector<double> GetDeviationPara(cv::Mat, vector<double>&);
+			static bool FindBoardCorner(cv::Mat, bool&);
 		private:
 			static void sortConnerPoints(std::vector<cv::Point2f>& corners);
 		};

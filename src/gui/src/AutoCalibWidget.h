@@ -40,7 +40,7 @@ public:
 	void saveImg(qint32 cameraNum);
 	void printLog(qint32 cameraLaserID, QString& log);
 	cv::Mat QImage2cvMat(QImage image);
-	void triggerPush(QString pushCommand);
+	void triggerPush(QString, qint32);
 	void pushFiles();
 	void cowaCalib();
 	void onTopFallLaserCalib();
@@ -127,6 +127,7 @@ private:
 	QMutex pause;
 public:
 	cv::Mat srcImg;
+	bool bFind;
 };
 
 #endif // AUTOCALIBWIDGET_H
