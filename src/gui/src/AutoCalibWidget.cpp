@@ -21,6 +21,7 @@
 #include "network/network.h"
 #include "calib.h"
 #include "file.h"
+#include "image.h"
 //#include "cowaCalib.h"
 #include <QDataStream>
 #include <fstream>
@@ -134,6 +135,7 @@ void AutoCalibWidget::initVariables(){
 	isSmallBoardCalibrated = false;
 	isFallLaserCalibrate = false;
 	bGetDeviation = false;
+	bFind = false;
 	//bin to the ptr
 	bigaxesIndex->push_back(5);
 	bigaxesIndex->push_back(4);
@@ -209,7 +211,7 @@ void AutoCalibWidget::onTestBtnClicked(){
 	//pushFiles();
 	DWORD start_time = GetTickCount();
 	cv::Mat srcImg = cv::imread("./temp/x2.bmp");
-	Calib::FindBoardCorner(srcImg, bFind);
+	Image::ImgAvgGrayValue(srcImg, bFind);
 	DWORD end_time = GetTickCount();
 	qDebug() << "The run time is:" << (end_time - start_time) << "ms!" << endl;//输出运行时间
 	//bool bFind;
@@ -628,13 +630,13 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 		imageToSave = image.copy();
 		displayView->showImage(image);
 		srcImg = QImage2cvMat(image);
+		//Calib::GetDeviationPara(srcImg, para);
+		Image::ImgAvgGrayValue(srcImg, bFind);
 
 		if (!smallPanSaveFinish)
 		{
 			if (camera < 5)
 			{
-				//Calib::GetDeviationPara(srcImg, para);
-				Calib::FindBoardCorner(srcImg, bFind);
 				while (!bFind)
 				{
 					CMDParser::getInstance().requestImage({ camera });            //take a picture again
@@ -651,7 +653,6 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 		{
 			if (camera > 5)
 			{
-				Calib::FindBoardCorner(srcImg, bFind);
 				while (!bFind)
 				{
 					CMDParser::getInstance().requestImage({ camera });            //take a picture again

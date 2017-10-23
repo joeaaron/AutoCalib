@@ -52,6 +52,7 @@ target_link_libraries(${PROJECT_NAME}
 					  Calib
 					  ecatmc
 					  fileFunction
+					  Image
 					  ${EXTRA_LIBS}
 					)
 
