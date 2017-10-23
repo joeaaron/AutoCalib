@@ -585,3 +585,8 @@ build/src/gui/resource1.h
 build/src/gui/gui1.rc
 build/src/gui/gui1.aps
 build/src/gui/temp/x2.bmp
+build/gui.psess
+build/Report171023.vsp
+build/gui171023.vsp
+build/Performance2.psess
+build/Performance1.psess

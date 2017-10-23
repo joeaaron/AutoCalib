@@ -1,3 +1,16 @@
+/*!
+ * \file AutoCalibWidget.cpp
+ * \date 2017/10/23 14:09
+ *
+ * \author JohnShua
+ * Contact: user@company.com
+ *
+ * \brief 
+ *
+ * TODO: long description
+ *
+ * \note
+*/
 #ifndef _ECAT_GUI_AutoCalibWidget_H_
 #define _ECAT_GUI_AutoCalibWidget_H_
 #include "AutoCalibWidget.h"
@@ -54,6 +67,13 @@ AutoCalibWidget::AutoCalibWidget(QWidget *parent) :
 	initUi();
 } 
 
+//************************************
+// Method:    initUi
+// FullName:  AutoCalibWidget::initUi
+// Access:    private 
+// Returns:   void
+// Qualifier:
+//************************************
 void AutoCalibWidget::initUi(){
 	//useless button hided
 	ui->saveBtn->hide();
@@ -186,8 +206,12 @@ void AutoCalibWidget::onTestBtnClicked(){
 	calib.GetDeviationPara(dst, para);*/
 	//qDebug() << xyz_xPoint_2.at(0);
 	//onCalibBtnClicked();
-	pushFiles();
-
+	//pushFiles();
+	DWORD start_time = GetTickCount();
+	cv::Mat srcImg = cv::imread("./temp/x2.bmp");
+	Calib::FindBoardCorner(srcImg, bFind);
+	DWORD end_time = GetTickCount();
+	qDebug() << "The run time is:" << (end_time - start_time) << "ms!" << endl;//输出运行时间
 	//bool bFind;
 	//cv::Mat srcImg = cv::imread("./temp/x2.bmp");
 	//if (srcImg.empty())
@@ -603,22 +627,41 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 	else{
 		imageToSave = image.copy();
 		displayView->showImage(image);
-		
-		if (!isSaveImage)
+		srcImg = QImage2cvMat(image);
+
+		if (!smallPanSaveFinish)
 		{
-			srcImg = QImage2cvMat(image);
-			//Calib::GetDeviationPara(srcImg, para);
-			Calib::FindBoardCorner(srcImg, bFind);
-			while (!bFind)
+			if (camera < 5)
 			{
-				CMDParser::getInstance().requestImage({ camera });            //take a picture again
+				//Calib::GetDeviationPara(srcImg, para);
+				Calib::FindBoardCorner(srcImg, bFind);
+				while (!bFind)
+				{
+					CMDParser::getInstance().requestImage({ camera });            //take a picture again
+					displayView->showImage(image);
+				}
+				saveImg(camera);
 			}
-			saveImg(camera);
+			else
+				saveImg(camera);
 		}
 		
 		//saveImg
-		/*else
-			saveImg(camera);*/
+		else
+		{
+			if (camera > 5)
+			{
+				Calib::FindBoardCorner(srcImg, bFind);
+				while (!bFind)
+				{
+					CMDParser::getInstance().requestImage({ camera });            //take a picture again
+					displayView->showImage(image);
+				}
+				saveImg(camera);
+			}
+			else
+				saveImg(camera);
+		}
 		
 		recvFinish = true;
 		//ui->displayBtn->setEnabled(true);
@@ -753,7 +796,6 @@ void AutoCalibWidget::onSmallBoardMotionPro()
 		printLog(i, logInfo1);
 
 		bool isTeachOver = false;
-		isSaveImage = false;
 
 		for (int j = 0; j < SMALLPANSIZE / CAMERAS; ++j)
 		{
@@ -909,7 +951,6 @@ void AutoCalibWidget::onSmallBoardMotionPro()
 
 void AutoCalibWidget::onSmallBoardMotion()
 {
-	isSaveImage = false;
 	chessBoardPos pos;
 	emit openTopLaser();
 	QString value = ui->sCamlineEdit->text();
@@ -1045,7 +1086,6 @@ void AutoCalibWidget::onSmallBoardMotion()
 
 void AutoCalibWidget::onLargeBoardMotion()
 {
-	isSaveImage = false;
 	smallPanSaveFinish = true;
 	chessBoardPos pos;
 
