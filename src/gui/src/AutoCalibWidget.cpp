@@ -95,6 +95,7 @@ void AutoCalibWidget::InitSignals()
 	connect(ui->testBtn, SIGNAL(clicked()), this, SLOT(onTestBtnClicked()));
 	connect(ui->importBtn, SIGNAL(clicked()), this, SLOT(onImportBtnClicked()));
 	connect(ui->saveBtn, SIGNAL(clicked()), this, SLOT(onSaveBtnClicked()));
+	connect(ui->displayBtn, SIGNAL(clicked()), this, SLOT(onDisplayBtnClicked()));
 	//connect(updateTimer, SIGNAL(timeout()), this, SLOT(onUpdateTimerOut()));
 
 	connect(&CMDParser::getInstance(), SIGNAL(recvImage(quint16, quint16, quint16, QByteArray)),
@@ -177,8 +178,8 @@ void AutoCalibWidget::initVariables(){
 }
 
 void AutoCalibWidget::onDisplayBtnClicked(){
-	ui->displayBtn->setEnabled(false);
-	CMDParser::getInstance().requestImage({ cameraID });
+	//ui->displayBtn->setEnabled(false);
+	CMDParser::getInstance().requestImage({0});
 }
 
 void AutoCalibWidget::onBoardCheckBoxStateChanged(int state)
@@ -631,16 +632,17 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 		displayView->showImage(image);
 		srcImg = QImage2cvMat(image);
 		//Calib::GetDeviationPara(srcImg, para);
-		Image::ImgAvgGrayValue(srcImg, bFind);
+		cv::Mat img = srcImg.clone();
+		Image::ImgAvgGrayValue(img, bFind);
 
 		//save img or not
-		if (!isSaveImage)
+		if (isSaveImage)
 		{
 			if (!smallPanSaveFinish)
 			{
 				if (camera < 5)
 				{
-					while (!bFind)
+					if (!bFind)
 					{
 						CMDParser::getInstance().requestImage({ camera });            //take a picture again
 						displayView->showImage(image);
@@ -656,7 +658,7 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 			{
 				if (camera > 5)
 				{
-					while (!bFind)
+					if (!bFind)
 					{
 						CMDParser::getInstance().requestImage({ camera });            //take a picture again
 						displayView->showImage(image);

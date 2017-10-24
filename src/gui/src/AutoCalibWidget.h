@@ -36,7 +36,7 @@ public:
 	void onSmallBoardMotion();
 	void onSmallBoardMotionPro();
 	void onLargeBoardMotion();
-	void onDisplayBtnClicked();
+
 	void saveImg(qint32 cameraNum);
 	void printLog(qint32 cameraLaserID, QString& log);
 	cv::Mat QImage2cvMat(QImage image);
@@ -65,6 +65,7 @@ private slots:
 	void onStopBtnClicked();
 	void onCalibBtnClicked();
 	void onGetDeviation();
+	void onDisplayBtnClicked();
 	//void onCamComboActivated(int index);
 	void onMotionStart();
 	void onImgTook(qint32 camera, bool laser);
