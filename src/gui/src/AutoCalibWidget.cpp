@@ -632,6 +632,8 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 		srcImg = QImage2cvMat(image);
 		//Calib::GetDeviationPara(srcImg, para);
 		Image::ImgAvgGrayValue(srcImg, bFind);
+
+		//save img or not
 		if (!isSaveImage)
 		{
 			if (!smallPanSaveFinish)
@@ -959,7 +961,7 @@ void AutoCalibWidget::onSmallBoardMotion()
 	emit openTopLaser();
 	QString value = ui->sCamlineEdit->text();
 	qint32 camID = value.toInt();
-
+	isSaveImage = false;
 	for (int i = camID; i <= CAMERAS; ++i)
 	{
 		if (3 == i)
@@ -1092,6 +1094,7 @@ void AutoCalibWidget::onLargeBoardMotion()
 {
 	smallPanSaveFinish = true;
 	chessBoardPos pos;
+	isSaveImage = false;
 
 	emit openBottomLaser();
 
