@@ -209,12 +209,12 @@ void AutoCalibWidget::onTestBtnClicked(){
 	calib.GetDeviationPara(dst, para);*/
 	//qDebug() << xyz_xPoint_2.at(0);
 	//onCalibBtnClicked();
-	//pushFiles();
-	DWORD start_time = GetTickCount();
-	cv::Mat srcImg = cv::imread("./temp/x2.bmp");
-	Image::ImgAvgGrayValue(srcImg, bFind);
-	DWORD end_time = GetTickCount();
-	qDebug() << "The run time is:" << (end_time - start_time) << "ms!" << endl;//输出运行时间
+	pushFiles();
+	//DWORD start_time = GetTickCount();
+	//cv::Mat srcImg = cv::imread("./temp/x2.bmp");
+	//Image::ImgAvgGrayValue(srcImg, bFind);
+	//DWORD end_time = GetTickCount();
+	//qDebug() << "The run time is:" << (end_time - start_time) << "ms!" << endl;
 	//bool bFind;
 	//cv::Mat srcImg = cv::imread("./temp/x2.bmp");
 	//if (srcImg.empty())
@@ -647,7 +647,8 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 						CMDParser::getInstance().requestImage({ camera });            //take a picture again
 						displayView->showImage(image);
 					}
-					saveImg(camera);
+					else
+						saveImg(camera);
 				}
 				else
 					saveImg(camera);
@@ -663,7 +664,8 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 						CMDParser::getInstance().requestImage({ camera });            //take a picture again
 						displayView->showImage(image);
 					}
-					saveImg(camera);
+					else
+						saveImg(camera);
 				}
 				else
 					saveImg(camera);
@@ -686,8 +688,8 @@ void AutoCalibWidget::pushFiles()
 {
 	int pushTimeConsuming;       
 
-	QString binFilesCommand("adb push .\images\cowa_cam_config\aligned /data/cowa_cam_config");
-	pushTimeConsuming = 10000;
+	QString binFilesCommand("adb push ./images/cowa_cam_config/aligned /data/cowa_cam_config");
+	pushTimeConsuming = 15000;
 	triggerPush(binFilesCommand, pushTimeConsuming);
 
 	QString yDividingCommand("adb push yDividing.txt /data/cowa_cam_config");

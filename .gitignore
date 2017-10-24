@@ -590,3 +590,9 @@ build/Report171023.vsp
 build/gui171023.vsp
 build/Performance2.psess
 build/Performance1.psess
+build/src/gui/images/cowa_cam_config/aligned/cowarobot
+build/src/gui/images/cowa_cam_config/aligned/camera.sc8830.so
+build/src/gui/cowarobot
+build/src/gui/camera.sc8830.so
+build/src/gui/yDividing.txt
+build/src/gui/images/cowa_cam_config/aligned/yDividing.txt
