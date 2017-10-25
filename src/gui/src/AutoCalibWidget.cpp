@@ -128,6 +128,8 @@ void AutoCalibWidget::initVariables(){
 	lrOffset = 0.0;
 	udOffset = 0.0;
 	areaOffset = 0.0;
+
+	endPoint = 5;
 	//flags
 	smallPanSaveFinish = false;
 	bigPanSaveFinish = false;
@@ -636,7 +638,7 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 		Image::ImgAvgGrayValue(img, bFind);
 
 		//save img or not
-		if (isSaveImage)
+		if (!isSaveImage)
 		{
 			if (!smallPanSaveFinish)
 			{
@@ -646,6 +648,7 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 					{
 						CMDParser::getInstance().requestImage({ camera });            //take a picture again
 						displayView->showImage(image);
+						return;               //exis at once while image is invalid
 					}
 					else
 						saveImg(camera);
@@ -663,6 +666,7 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 					{
 						CMDParser::getInstance().requestImage({ camera });            //take a picture again
 						displayView->showImage(image);
+						return;
 					}
 					else
 						saveImg(camera);
@@ -688,17 +692,17 @@ void AutoCalibWidget::pushFiles()
 {
 	int pushTimeConsuming;       
 
-	QString binFilesCommand("adb push ./images/cowa_cam_config/aligned /data/cowa_cam_config");
-	pushTimeConsuming = 50000;              //find the appropriate time
-	triggerPush(binFilesCommand, pushTimeConsuming);
+	//QString binFilesCommand("adb push ./images/cowa_cam_config/aligned /data/cowa_cam_config");
+	//pushTimeConsuming = 90000;              //find the appropriate time
+	//triggerPush(binFilesCommand, pushTimeConsuming);
 
 	QString yDividingCommand("adb push yDividing.txt /data/cowa_cam_config");
 	pushTimeConsuming = 2000;
 	triggerPush(yDividingCommand, pushTimeConsuming);
 
-	QString cowarobotCommand("adb push cowarobot /system/bin");
+	/*QString cowarobotCommand("adb push cowarobot /system/bin");
 	pushTimeConsuming = 2000;
-	triggerPush(cowarobotCommand, pushTimeConsuming);
+	triggerPush(cowarobotCommand, pushTimeConsuming);*/
 
 	QString cameraScCommand("adb push camera.sc8830.so /system/lib/hw");
 	pushTimeConsuming = 2000;
@@ -1436,6 +1440,24 @@ void AutoCalibWidget::onTopFallLaserCalib()
 	suitcaseMotion(endPoint);
 }
 
+void AutoCalibWidget::clearVectorArray()
+{
+	xyz_xPoint_1.clear();
+	xyz_xPoint_2.clear();
+	xyz_yPoint_1.clear();
+	xyz_yPoint_2.clear();
+	xyz_zPoint_1.clear();
+	xyz_zPoint_2.clear();
+	xyz_rPoint_1.clear();
+	xyz_rPoint_2.clear();
+
+	smallpan_xPoint.clear();
+	smallpan_zPoint.clear();
+
+	bigpan_xPoint.clear();
+	bigpan_zPoint.clear();
+}
+
 void AutoCalibWidget::onMotionStart(){
 	//go home
 	/*xyzPtr->home(xyzaxesIndex->at(0));
@@ -1470,7 +1492,9 @@ void AutoCalibWidget::onMotionStart(){
 			onLargeBoardMotion();
 		}
 	}
-		
+
+	//clear the vector array
+	clearVectorArray();
 	//onSmallBoardMotionPro();
 	onStartBtnToggled(false);
 	//calib the files

@@ -44,6 +44,7 @@ public:
 	void pushFiles();
 	void cowaCalib();
 	void onTopFallLaserCalib();
+	void clearVectorArray();
 signals:
 	void Connect();
 	void Import();

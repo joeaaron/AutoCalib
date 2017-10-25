@@ -604,3 +604,6 @@ build/src/gui/gui2.rc
 build/src/gui/gui2.aps
 build/src/gui/gui.vcxproj.user
 build/src/gui/gui.dir/Debug/gui2.res
+build/src/gui/log/Warning20171025-140620.6692
+build/src/gui/log/Info20171025-140620.6692
+build/src/gui/log/Error20171025-140620.6692

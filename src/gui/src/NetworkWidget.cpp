@@ -27,6 +27,7 @@ NetworkWidget::~NetworkWidget(){
 
 void NetworkWidget::initUi(){
 	// init sensor host 127.0.0.1
+	ui->visionHostCombo->addItem("192.168.1.100");
 	ui->visionHostCombo->addItem("192.168.1.101");
 	ui->visionHostCombo->addItem("192.168.1.102");
 	ui->visionHostCombo->addItem("192.168.1.103");
