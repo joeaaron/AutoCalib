@@ -689,7 +689,7 @@ void AutoCalibWidget::pushFiles()
 	int pushTimeConsuming;       
 
 	QString binFilesCommand("adb push ./images/cowa_cam_config/aligned /data/cowa_cam_config");
-	pushTimeConsuming = 50000;
+	pushTimeConsuming = 50000;              //find the appropriate time
 	triggerPush(binFilesCommand, pushTimeConsuming);
 
 	QString yDividingCommand("adb push yDividing.txt /data/cowa_cam_config");
