@@ -596,3 +596,11 @@ build/src/gui/cowarobot
 build/src/gui/camera.sc8830.so
 build/src/gui/yDividing.txt
 build/src/gui/images/cowa_cam_config/aligned/yDividing.txt
+build/src/gui/resource2.h
+build/src/gui/images/cowa_cam_config/yDividing.txt
+build/src/gui/images/cowa_cam_config/cowarobot
+build/src/gui/images/cowa_cam_config/camera.sc8830.so
+build/src/gui/gui2.rc
+build/src/gui/gui2.aps
+build/src/gui/gui.vcxproj.user
+build/src/gui/gui.dir/Debug/gui2.res
