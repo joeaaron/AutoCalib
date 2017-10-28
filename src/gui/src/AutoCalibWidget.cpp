@@ -569,10 +569,10 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 		expRPos = xyz_rPoint_2.at(i) * (1 << 17) / 360 * 100;
 	}
 	
-	expXVel = 45 * (1 << 17) / 45;
-	expYVel = 45 * (1 << 17) / 20;
-	expZVel = 50  * (1 << 17) / 10;
-	expRVel = 55 * (1 << 17) / 360 * 100;					//INCREMENTAL ENCODER
+	expXVel = 80 * (1 << 17) / 45;
+	expYVel = 65 * (1 << 17) / 20;
+	expZVel = 65  * (1 << 17) / 10;
+	expRVel = 65 * (1 << 17) / 360 * 100;					//INCREMENTAL ENCODER
 	//expRVel = 5 * (1 << 17) / 360 * 100;					//ABSOLUTE ENCODER
 	
 	if (!xyzPtr->moveRP2P(expRPos, expRVel)){
@@ -647,7 +647,6 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 					if (!bFind)
 					{
 						CMDParser::getInstance().requestImage({ camera });            //take a picture again
-						displayView->showImage(image);
 						return;               //exis at once while image is invalid
 					}
 					else
@@ -665,7 +664,6 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 					if (!bFind)
 					{
 						CMDParser::getInstance().requestImage({ camera });            //take a picture again
-						displayView->showImage(image);
 						return;
 					}
 					else
@@ -987,7 +985,7 @@ void AutoCalibWidget::onSmallBoardMotion()
 */
 			qint32 expSmallPitchPos = smallpan_xPoint.at(j + (i - 1) * 6) * (1 << 17) / 360 * 40 ;
 			qint32 expSmallYawPos = smallpan_zPoint.at(j + (i - 1) * 6)* (1 << 17) / 360 * 40 ;
-			qint32 expSmallVel = 20 * (1 << 17) / 360 * 40;
+			qint32 expSmallVel = 30 * (1 << 17) / 360 * 40;
 
 			if (!smallPanTiltPtr->pitchP2P(expSmallPitchPos, expSmallVel)){
 				QMessageBox::critical(this,
@@ -1085,7 +1083,7 @@ void AutoCalibWidget::onSmallBoardMotion()
 		printLog(i, logInfo3);
 	}
 	//avoid the collision happened between chessboard and motor
-	qint32 smallPitchPos = 21 * (1 << 17) / 360 * 40;
+	qint32 smallPitchPos = 13 * (1 << 17) / 360 * 40;
 	qint32 smallYawPos = 52 * (1 << 17) / 360 * 40;
 	qint32 smallVel = 25 * (1 << 17) / 360 * 40;
 	if (!smallPanTiltPtr->pitchP2P(smallPitchPos, smallVel)){
