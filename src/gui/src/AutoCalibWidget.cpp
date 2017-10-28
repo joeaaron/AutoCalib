@@ -690,9 +690,9 @@ void AutoCalibWidget::pushFiles()
 {
 	int pushTimeConsuming;       
 
-	//QString binFilesCommand("adb push ./images/cowa_cam_config/aligned /data/cowa_cam_config");
-	//pushTimeConsuming = 90000;              //find the appropriate time
-	//triggerPush(binFilesCommand, pushTimeConsuming);
+	QString binFilesCommand("adb push ./images/cowa_cam_config/aligned /data/cowa_cam_config");
+	pushTimeConsuming = 90000;              //find the appropriate time
+	triggerPush(binFilesCommand, pushTimeConsuming);
 
 	QString yDividingCommand("adb push yDividing.txt /data/cowa_cam_config");
 	pushTimeConsuming = 2000;
@@ -811,9 +811,9 @@ void AutoCalibWidget::onSmallBoardMotionPro()
 
 		for (int j = 0; j < SMALLPANSIZE / CAMERAS; ++j)
 		{
-			qint32 expSmallPitchPos = smallpan_xPoint.at(j + (i - 1) * 6) * (1 << 17) / 360 * 40 * 60 + axesOffset->at(0);
-			qint32 expSmallYawPos = smallpan_zPoint.at(j + (i - 1) * 6)* (1 << 17) / 360 * 40 * 60 + axesOffset->at(1);
-			qint32 expSmallVel = 50 * (1 << 17) / 360 * 100;
+			qint32 expSmallPitchPos = smallpan_xPoint.at(j + (i - 1) * 6) * (1 << 17) / 360 * 40;
+			qint32 expSmallYawPos = smallpan_zPoint.at(j + (i - 1) * 6)* (1 << 17) / 360 * 40;
+			qint32 expSmallVel = 30 * (1 << 17) / 360 * 40;
 
 			if (!smallPanTiltPtr->pitchP2P(expSmallPitchPos, expSmallVel)){
 				QMessageBox::critical(this,
@@ -853,28 +853,31 @@ void AutoCalibWidget::onSmallBoardMotionPro()
 						sleep(100);
 					}
 					///posoiton
-					qint32	XPos = xyz_xPoint_1.at(3 * i - 3) * 10000 / M_PI / 23.87 * 3;
-					qint32	YPos = xyz_yPoint_1.at(3 * i - 3) * 10000 / M_PI / 23.87 * 3;
-					qint32	ZPos = xyz_zPoint_1.at(3 * i - 3) * 10000 / M_PI / 23.87 * 40;
+					qint32	XPos = xyz_xPoint_1.at(3 * i - 3) * (1 << 17) / 45;
+					qint32	YPos = xyz_yPoint_1.at(3 * i - 3) * (1 << 17) / 20;
+					qint32	ZPos = xyz_zPoint_1.at(3 * i - 3) * (1 << 17) / 10;
 					///velocity
-					qint32	XYVel = 10 * 10000 / M_PI / 23.87 * 3;
-					qint32	ZVel = 10 * 10000 / M_PI / 23.87 * 40;
+					/*qint32	XYVel = 10 * 10000 / M_PI / 23.87 * 3;
+					qint32	ZVel = 10 * 10000 / M_PI / 23.87 * 40;*/
+					qint32 XVel = 80 * (1 << 17) / 45;
+					qint32 YVel = 65 * (1 << 17) / 20;
+					qint32 ZVel = 65 * (1 << 17) / 10;
 
 					if (fabs(lrOffset) > 20)
 					{
 						YPos = (xyz_yPoint_1.at(3 * i - 3) + lrOffset) * 10000 / M_PI / 23.87 * 3;
-						xyzPtr->moveYP2P(YPos, XYVel);
+						xyzPtr->moveYP2P(YPos, YVel);
 					}
 					else
-						xyzPtr->moveYP2P(YPos, XYVel);
+						xyzPtr->moveYP2P(YPos, YVel);
 
 					if (areaOffset > 180000 && 2 != i)
 					{
 						XPos = (xyz_xPoint_1.at(3 * i - 3) - (areaOffset - 180000) / 500) * 10000 / M_PI / 23.87 * 3;
-						xyzPtr->moveXP2P(XPos, XYVel);
+						xyzPtr->moveXP2P(XPos, XVel);
 					}
 					else
-						xyzPtr->moveXP2P(XPos, XYVel);
+						xyzPtr->moveXP2P(XPos, XVel);
 
 					if (fabs(udOffset) > 10)
 					{
@@ -985,7 +988,7 @@ void AutoCalibWidget::onSmallBoardMotion()
 */
 			qint32 expSmallPitchPos = smallpan_xPoint.at(j + (i - 1) * 6) * (1 << 17) / 360 * 40 ;
 			qint32 expSmallYawPos = smallpan_zPoint.at(j + (i - 1) * 6)* (1 << 17) / 360 * 40 ;
-			qint32 expSmallVel = 30 * (1 << 17) / 360 * 40;
+			qint32 expSmallVel = 35 * (1 << 17) / 360 * 40;
 
 			if (!smallPanTiltPtr->pitchP2P(expSmallPitchPos, expSmallVel)){
 				QMessageBox::critical(this,
