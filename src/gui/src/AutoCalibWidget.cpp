@@ -211,7 +211,7 @@ void AutoCalibWidget::onTestBtnClicked(){
 	calib.GetDeviationPara(dst, para);*/
 	//qDebug() << xyz_xPoint_2.at(0);
 	//onCalibBtnClicked();
-	pushFiles();
+	//pushFiles();
 	//DWORD start_time = GetTickCount();
 	//cv::Mat srcImg = cv::imread("./temp/x2.bmp");
 	//Image::ImgAvgGrayValue(srcImg, bFind);
@@ -225,6 +225,12 @@ void AutoCalibWidget::onTestBtnClicked(){
 	//}
 	//Calib::FindBoardCorner(srcImg, bFind);
 	//qDebug() << bFind;
+
+	QString logInfo4 = QString("calib %1 camera-laser calibration finished :").arg(1);
+	printLog(1, logInfo4);
+
+	sleep(10000);
+	ui->processLog->clear();
 }
 
 void AutoCalibWidget::onOpenBottomLaser(){
@@ -1206,7 +1212,7 @@ void AutoCalibWidget::cowaCalib()
 {
 	char buf[1000];
 	GetCurrentDirectory(1000, buf);
-	std::cout << buf << std::endl;
+	//std::cout << buf << std::endl;
 
 	std::string path = buf;
 	std::string dirPath = path + "\\images\\";
@@ -1230,6 +1236,9 @@ void AutoCalibWidget::cowaCalib()
 	{
 		if (3 == i || 7 == i)
 			continue;
+
+		QString logInfo1 = QString("calib %1 camera-laser calibration starting :").arg(i);
+		printLog(i, logInfo1);
 
 		std::string currentPath;
 		if (i < 5)
@@ -1276,7 +1285,11 @@ void AutoCalibWidget::cowaCalib()
 				Calib::RunHandEyesCalib("out_stereo_data.xml", HAND_EYE_CALIBRATION_ROTATION_ANGLE, "out_handeyes_data.xml");
 				Calib::RunTableChange("RawTransformationTable.bin", "out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
 			}
+
+			QString logInfo2 = QString("calib %1 top calibration fininshed :").arg(i);
+			printLog(i, logInfo2);
 		}
+
 		else if (upperDirName == "\\bottom") // calibrate bottom laser
 		{
 			std::string outCameraDataFilePath = upperDirPath + "\\..\\top" + currentDirName + "\\out_camera_data.xml";
@@ -1303,6 +1316,9 @@ void AutoCalibWidget::cowaCalib()
 				else
 					Calib::RunTableChange("RawTransformationTable.bin", upperDirPath + "\\..\\top" + currentDirName + "\\out_handeyes_data.xml", "out_laser_camera.xml", -HAND_EYE_CALIBRATION_ROTATION_ANGLE / 2, 0, "transformationTable.bin");
 			}
+
+			QString logInfo3 = QString("calib %1 bottom calibration fininshed :").arg(i);
+			printLog(i, logInfo3);
 		}
 		else
 		{
@@ -1353,6 +1369,10 @@ void AutoCalibWidget::cowaCalib()
 		out.close();
 
 		cv::destroyAllWindows();
+
+		QString logInfo4 = QString("calib %1 camera-laser calibration finished :").arg(i);
+		printLog(i, logInfo4);
+
 	}
 
 	/*std::cout << "Press any key to continue!" << std::endl;
@@ -1456,6 +1476,9 @@ void AutoCalibWidget::clearVectorArray()
 
 	bigpan_xPoint.clear();
 	bigpan_zPoint.clear();
+
+	sleep(3000);
+	ui->processLog->clear();
 }
 
 void AutoCalibWidget::onMotionStart(){
