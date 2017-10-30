@@ -691,7 +691,7 @@ void AutoCalibWidget::pushFiles()
 	int pushTimeConsuming;       
 
 	QString binFilesCommand("adb push ./images/cowa_cam_config/aligned /data/cowa_cam_config");
-	pushTimeConsuming = 90000;              //find the appropriate time
+	pushTimeConsuming = 40000;              //find the appropriate time
 	triggerPush(binFilesCommand, pushTimeConsuming);
 
 	QString yDividingCommand("adb push yDividing.txt /data/cowa_cam_config");
@@ -705,7 +705,6 @@ void AutoCalibWidget::pushFiles()
 	QString cameraScCommand("adb push camera.sc8830.so /system/lib/hw");
 	pushTimeConsuming = 2000;
 	triggerPush(cameraScCommand, pushTimeConsuming);
-
 }
 
 void AutoCalibWidget::onCalibBtnClicked(){
@@ -1499,7 +1498,7 @@ void AutoCalibWidget::onMotionStart(){
 	//onSmallBoardMotionPro();
 	onStartBtnToggled(false);
 	//calib the files
-	onCalibBtnClicked();
+	//onCalibBtnClicked();
 	//terminate the procedure
 	//onStopBtnClicked();
 	
