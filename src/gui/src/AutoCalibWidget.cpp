@@ -109,11 +109,19 @@ void AutoCalibWidget::InitSignals()
 
 	connect(ui->boardCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onBoardCheckBoxStateChanged(int)));
 	connect(ui->fallCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onFallCheckBoxStateChanged(int)));
+
+	connect(ui->calibIDCBox, SIGNAL(activated(int)), this, SLOT(onCamComboActivated(int)));
 }
 
 AutoCalibWidget::~AutoCalibWidget()
 {
     delete ui;
+}
+
+
+void AutoCalibWidget::onCamComboActivated(int index){
+
+	calibID = index + 1;
 }
 
 void AutoCalibWidget::initVariables(){
@@ -130,6 +138,7 @@ void AutoCalibWidget::initVariables(){
 	areaOffset = 0.0;
 
 	endPoint = 5;
+	calibID = 1;
 	//flags
 	smallPanSaveFinish = false;
 	bigPanSaveFinish = false;
@@ -226,11 +235,30 @@ void AutoCalibWidget::onTestBtnClicked(){
 	//Calib::FindBoardCorner(srcImg, bFind);
 	//qDebug() << bFind;
 
-	QString logInfo4 = QString("calib %1 camera-laser calibration finished :").arg(1);
-	printLog(1, logInfo4);
+	//QString logInfo4 = QString("calib %1 camera-laser calibration finished :").arg(1);
+	//printLog(1, logInfo4);
 
-	sleep(10000);
-	ui->processLog->clear();
+	//sleep(10000);
+	//ui->processLog->clear();
+
+	backUpFile();
+}
+
+void AutoCalibWidget::backUpFile()
+{
+	char buf[1000];
+	GetCurrentDirectory(1000, buf);
+	//std::cout << buf << std::endl;
+	std::string path = buf;
+	std::string dirPath = path + "\\images\\";
+	//2017/11/1 fix something 
+	std::string backup = "C:\\Users\\JohnShua\\Desktop\\COWA_CALIB\\";
+	std::string mkDir = "md " + backup + "images";
+	system(mkDir.c_str());
+
+	const char* dstPath = "C:\\Users\\JohnShua\\Desktop\\COWA_CALIB\\images";
+
+	File::copyDir(dirPath.c_str(), dstPath);
 }
 
 void AutoCalibWidget::onOpenBottomLaser(){
@@ -1232,7 +1260,7 @@ void AutoCalibWidget::cowaCalib()
 
 	const char* dstPath = "D:\\calibFiles\\cowa_R1";
 
-	for (int i = 1; i <= 8; i++)
+	for (int i = calibID; i <= 8; i++)
 	{
 		if (3 == i || 7 == i)
 			continue;
@@ -1385,7 +1413,7 @@ void AutoCalibWidget::cowaCalib()
 	///adb push .bin files to suitcase
 	//pushFiles();  //to be finished
 
-	File::copyDir(dirPath.c_str(), dstPath);
+	//File::copyDir(dirPath.c_str(), dstPath);
 }
 
 void AutoCalibWidget::onTopFallLaserCalib()
@@ -1524,6 +1552,8 @@ void AutoCalibWidget::onMotionStart(){
 	//onCalibBtnClicked();
 	//terminate the procedure
 	//onStopBtnClicked();
+	///copy files to another dir
+	backUpFile();
 	
 }
 

@@ -45,6 +45,7 @@ public:
 	void cowaCalib();
 	void onTopFallLaserCalib();
 	void clearVectorArray();
+	void backUpFile();
 signals:
 	void Connect();
 	void Import();
@@ -76,6 +77,7 @@ private slots:
 	void onOpenTopFallLaser();
 	void onBoardCheckBoxStateChanged(int);
 	void onFallCheckBoxStateChanged(int);
+	void onCamComboActivated(int);
 private:
     Ui::AutoCalibWidget *ui;
 	QMap<DEVICE_AXIS, int> deviceAxesMap;
@@ -108,6 +110,7 @@ private:
 
 	DisplayView* displayView;
 	qint32 cameraID, num;
+	qint32 calibID;
 	qint32 endPoint;
 	QImage imageToSave;
 	QString savePath, saveDir;
