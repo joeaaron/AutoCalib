@@ -787,3 +787,7 @@ build/src/gui/log/Error20171031-110019.11260
 build/src/gui/log/Error20171031-104159.6988
 build/src/gui/log/Error20171031-104144.7840
 build/src/gui/log/Error20171031-085808.9892
+build/src/gui/resource3.h
+build/src/gui/gui3.rc
+build/src/gui/gui3.aps
+build/src/gui/gui.dir/Debug/gui3.res

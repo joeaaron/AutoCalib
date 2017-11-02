@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <Windows.h>
+#include <thread>
 using namespace std;
 #ifdef WIN32
 #	define ECATMC_API extern "C" __declspec(dllexport)
@@ -11,21 +12,28 @@ using namespace std;
 #include "ecatmc.h"
 #define DEBUG_INFO(...) //printf
 
-#define SERIAL_SIZE 2
+#define SERIAL_SIZE 4
 CSerialPort serial_port[SERIAL_SIZE];
+string cmd[SERIAL_SIZE * 2];
+int32_t ret[SERIAL_SIZE * 2] = { 0 };
+int32_t pos[SERIAL_SIZE * 2] = { 0 };
+int32_t vel[SERIAL_SIZE * 2] = { 0 };
+int32_t enabled[SERIAL_SIZE * 2] = { -1 };
+int32_t stopped[SERIAL_SIZE * 2] = { -1 };
+int32_t finished[SERIAL_SIZE * 2] = { -1 };
 
-void clear_serial_port(int index)
+void clear_serial_port(int serial_index)
 {
-	serial_port[index].Enter_Critical();
-	bool is_empty = serial_port[index].fifo.is_empty();
+	serial_port[serial_index].Enter_Critical();
+	bool is_empty = serial_port[serial_index].fifo.is_empty();
 	if (!is_empty)
 	{
-		serial_port[index].fifo.reset();
-		serial_port[index].Leave_Critical();
+		serial_port[serial_index].fifo.reset();
+		serial_port[serial_index].Leave_Critical();
 	}
 	else
 	{
-		serial_port[index].Leave_Critical();
+		serial_port[serial_index].Leave_Critical();
 		return;
 	}
 }
@@ -46,45 +54,9 @@ string serial_read_data(int index)
 	}
 	return data;
 }
-int select_axis(int index)
+int send_cmd(int serial_index, string cmd)
 {
-	int serial_index = 0;
-	if (index > 3)
-	{
-		serial_index = 1;
-	}
-	clear_serial_port(serial_index);
-	//选中轴
-	string cmd;
-	stringstream ss;
-
-	ss << index + 3;
-	cmd = "\\" + ss.str() + "\r";
-
-	serial_port[serial_index].WriteData((unsigned char *)cmd.c_str(), cmd.size());
-	string status = "";
-	int times = 0;
-	do
-	{
-		times++;
-		status = status + serial_read_data(serial_index);
-		if (-1 != status.find(ss.str() + "->"))
-		{
-			cmd = "\r";
-			serial_port[serial_index].WriteData((unsigned char *)cmd.c_str(), cmd.size());
-			return 0;
-		}
-	} while (times < 100);
-	return -1;
-}
-int send_cmd(int axis_index, string cmd)
-{
-	int serial_index = 0;
 	int sended_size = 0;
-	if (axis_index > 3)
-	{
-		serial_index = 1;
-	}
 	clear_serial_port(serial_index);
 	cmd = cmd + "\r";
 	while (sended_size < cmd.size())
@@ -94,33 +66,74 @@ int send_cmd(int axis_index, string cmd)
 		sended_size += size;
 		Sleep(20);
 	}
-	
 	return 0;
 }
-string get_status(int index)
+string get_status(int serial_index)
 {
-	int serial_index = 0;
-	if (index > 3)
-	{
-		serial_index = 1;
-	}
 	stringstream ss;
-	ss << index + 3;
-
 	string status;
 	int times = 0;
 	do
 	{
 		times++;
 		status = status + serial_read_data(serial_index);
-		int index = status.find(ss.str() + "->");
-		if (-1 != index)
+		ss << serial_index * 2 + 3;
+		int char_index = status.find_last_of(ss.str() + "->");
+		if (-1 != char_index)
 		{
-			return status.substr(0, index);
+			return status;
+		}
+		ss.str("");
+		ss << serial_index * 2 + 1 + 3;
+		char_index = status.find_last_of(ss.str() + "->");
+		if (-1 != char_index)
+		{
+			return status;
 		}
 	} while ((status != "" && times < 1000) || (status == "" && times < 100));
 	return "";
 }
+int select_axis(int serial_index, int index)
+{
+	//选中轴
+	string cmd_str;
+	stringstream ss;
+
+	ss << index + 3;
+	cmd_str = "\\" + ss.str();
+	clear_serial_port(serial_index);
+	send_cmd(serial_index, cmd_str);
+	string status = "";
+	int times = 0;
+	do
+	{
+		times++;
+		status = get_status(serial_index);
+		if (-1 != status.find(ss.str() + "->"))
+		{
+			cmd_str = "";
+			clear_serial_port(serial_index);
+			send_cmd(serial_index, cmd_str);
+			times = 0;
+			break;
+		}
+	} while (times < 100);
+	if (times != 0)
+		return -1;
+	else
+	{
+		do
+		{
+			times++;
+			status = get_status(serial_index);
+			if (-1 != status.find(ss.str() + "->"))
+			{
+				return 0;
+			}
+		} while (times < 100);
+	}
+}
+
 string int_to_str(int32_t num)
 {
 	stringstream ss;
@@ -133,6 +146,206 @@ string double_to_str(double num)
 	sprintf(buff, "%.2f", num);
 	return std::string(buff);
 }
+
+bool serial_stop = false;
+void serial_update(int serial_index)
+{
+	int axis_index = 0;
+	string axis_cmd = "";
+	int32_t str_index = 0;
+	while (!serial_stop)
+	{
+		Sleep(20);
+		for (axis_index = serial_index * 2; axis_index < serial_index * 2 + 2; axis_index ++)
+		{
+			if (0 == select_axis(serial_index, axis_index))
+			{
+				if (cmd[axis_index] != "")
+				{
+					send_cmd(serial_index, cmd[axis_index]);
+					Sleep(20);
+					axis_cmd = get_status(serial_index);
+					str_index = axis_cmd.find(cmd[axis_index]);
+					if (str_index != -1)
+					{
+						cmd[axis_index] = "";
+						ret[axis_index] = 0;
+					}
+					else
+					{
+						if (ret[axis_index] > 1)
+						{
+							ret[axis_index]--;
+						}
+						else if (ret[axis_index] == 1)
+						{
+							cmd[axis_index] = "";
+							ret[axis_index] = -1;
+						}
+					}
+				}
+			}
+		}
+		for (axis_index = serial_index * 2; axis_index < serial_index * 2 + 2; axis_index++)
+		{
+			if (0 == select_axis(serial_index, axis_index))
+			{
+				string ret_str = "";
+				stringstream ss;
+				send_cmd(serial_index, "pfb");
+				Sleep(1);
+				ret_str = get_status(serial_index);
+				str_index = ret_str.find("pfb");
+				if (str_index != -1)
+				{
+					if (str_index + 3 < ret_str.size())
+						ret_str = ret_str.substr(str_index + 3, ret_str.size());
+					else
+						ret_str = "";
+					str_index = ret_str.find_first_not_of("\r\n");
+					if (str_index != -1)
+					{
+						ret_str = ret_str.substr(str_index, ret_str.size());
+						str_index = ret_str.find(".00");
+						if (str_index != -1)
+						{
+							ret_str = ret_str.substr(0, str_index);
+						}
+						if (ret_str != "")
+						{
+							ss.str("");
+							ss.clear();
+							ss << ret_str;
+							ss >> pos[axis_index];
+						}
+					}
+				}
+
+				send_cmd(serial_index, "v");
+				Sleep(1);
+				ret_str = get_status(serial_index);
+				str_index = ret_str.find("v");
+				if (str_index != -1)
+				{
+					if (str_index + 1 < ret_str.size())
+						ret_str = ret_str.substr(str_index + 1, ret_str.size());
+					else
+						ret_str = "";
+					str_index = ret_str.find_first_not_of("\r\n");
+					if (str_index != -1)
+					{
+						ret_str = ret_str.substr(str_index, ret_str.size());
+						str_index = ret_str.find(" ");
+						if (str_index != -1)
+						{
+							ret_str = ret_str.substr(0, str_index);
+						}
+						if (ret_str != "")
+						{
+							ss.str("");
+							ss.clear();
+							ss << ret_str;
+							double vel_counts = 0;
+							ss >> vel_counts;
+							vel[axis_index] = (int32_t)(vel_counts * 131072.0 / 60);
+						}
+					}
+				}
+
+				send_cmd(serial_index, "active");
+				Sleep(1);
+				ret_str = get_status(serial_index);
+				str_index = ret_str.find("active");
+				if (str_index != -1)
+				{
+					if (str_index + 6 < ret_str.size())
+						ret_str = ret_str.substr(str_index + 6, ret_str.size());
+					else
+						ret_str = "";
+					str_index = ret_str.find_first_not_of("\r\n");
+					if (str_index != -1)
+					{
+						ret_str = ret_str.substr(str_index, ret_str.size());
+						str_index = ret_str.find("\r\n");
+						if (str_index != -1)
+						{
+							ret_str = ret_str.substr(0, str_index);
+						}
+						str_index = ret_str.find("<");
+						if (str_index != -1)
+						{
+							ret_str = ret_str.substr(0, str_index);
+						}
+						ss.str("");
+						ss.clear();
+						ss << ret_str;
+						int is_enable;
+						ss >> is_enable;
+						if (is_enable == 0 || is_enable == 1)
+						{
+							enabled[axis_index] = is_enable;
+						}
+					}
+				}
+
+				send_cmd(serial_index, "stopped");
+				Sleep(1);
+				ret_str = get_status(serial_index);
+				str_index = ret_str.find("stopped");
+				if (str_index != -1)
+				{
+					if (str_index + 7 < ret_str.size())
+						ret_str = ret_str.substr(str_index + 7, ret_str.size());
+					else
+						ret_str = "";
+					str_index = ret_str.find_first_not_of("\r\n");
+					if (str_index != -1)
+					{
+						ret_str = ret_str.substr(str_index, ret_str.size());
+						str_index = ret_str.find("\r\n");
+						if (str_index != -1)
+						{
+							ret_str = ret_str.substr(0, str_index);
+						}
+						str_index = ret_str.find("<");
+						if (str_index != -1)
+						{
+							ret_str = ret_str.substr(0, str_index);
+						}
+						ss.str("");
+						ss.clear();
+						ss << ret_str;
+						int is_stopped;
+						ss >> is_stopped;
+						if (is_stopped == -1 || is_stopped == 0 || is_stopped == 1 || is_stopped == 2)
+						{
+							if (is_stopped == 0)
+							{
+								stopped[axis_index] = 0;
+							}
+							else
+							{
+								stopped[axis_index] = 1;
+							}
+
+							if (is_stopped == 2)
+							{
+								finished[axis_index] = 1;
+							}
+							else
+							{
+								finished[axis_index] = 0;
+							}
+						}
+					}
+				}
+				
+				select_axis(serial_index, axis_index);
+			}
+		}
+	}
+}
+
 int digital_input_size(size_t *size)
 {
 	return 0;
@@ -151,40 +364,26 @@ int digital_output(uint8_t* data, size_t size)
 }
 int set_digital_output(uint8_t* data, size_t size)
 {
-	int times = 0;
-	int ret = 0;
-	int is_enable;
-	do
+	int32_t index = 3;
+	for (int i = 0; i < 5; i++)
 	{
-		times++;
-		ret == select_axis(3);
-		if (ret == 0)
+		ret[index] = 5;
+		cmd[index] = "out " + int_to_str(i * 2 + 8) + " " + int_to_str(data[i]);
+		while (ret[index] > 0)
 		{
-			break;
+			Sleep(1);
 		}
-	} while (times < 100);
-
-	if (ret == -1)
-	{
-		return -1;
+		if (ret[index] = -1)
+		{
+			continue;
+		}
+		else
+		{
+			return 0;
+		}
+		Sleep(10);
 	}
-	Sleep(100);
-	for (int i = 0; i < (int64_t)size; i++)
-	{
-		times = 0;
-		char flag = 0;
-		do
-		{  
-			times++;
-			ret = send_cmd(2, "out " + int_to_str(i * 2 + 8) + " " + int_to_str(data[i]));
-			if (ret != 0)
-			{
-				continue;
-			}
-			Sleep(50);
-		} while (times < 5);
-	}
-	return 0;
+	return -1;
 }
 
 
@@ -346,113 +545,27 @@ int motion_axis_error_code(axis_t index, int32_t* error)
 }
 int motion_axis_stopped(axis_t index, char* flag)
 {
-	int times = 0;
-	int ret = 0;
-	do
-	{
-		times++;
-		ret == select_axis(index);
-		if (ret == 0)
-		{
-			break;
-		}
-	} while (times < 100);
-
-	if (ret == -1)
+	if (stopped[index] != 0 && stopped[index] != 1)
 	{
 		return -1;
 	}
-	times = 0;
-	do
+	else
 	{
-		times++;
-		ret = send_cmd(index, "stopped");
-		if (ret != 0)
-		{
-			continue;
-		}
-		Sleep(100);
-		string status = get_status(index);
-		stringstream ss;
-		int _index = status.find_first_not_of("\r\n");
-		if (_index == -1)
-		{
-			continue;
-		}
-		status = status.substr(_index, status.size());
-		_index = status.find("\r\n");
-		if (_index != -1)
-		{
-			status = status.substr(0, _index);
-		}
-		ss << status;
-		int is_stopped;
-		ss >> is_stopped;
-		if (is_stopped == -1 || is_stopped == 0 || is_stopped == 1 || is_stopped == 2)
-		{
-			if (is_stopped == 0)
-			{
-				*flag = 0;
-			}
-			else
-			{
-				*flag = 1;
-			}
-			return 0;
-		}
-	} while (times < 5);
-	return -1;
+		*flag = stopped[index];
+		return 0;
+	}
 }
 int motion_axis_enabled(axis_t index, char* flag)
 {
-	int times = 0;
-	int ret = 0;
-	do
-	{
-		times++;
-		ret == select_axis(index);
-		if (ret == 0)
-		{
-			break;
-		}
-	} while (times < 100);
-
-	if (ret == -1)
+	if (enabled[index] != 0 && enabled[index] != 1)
 	{
 		return -1;
 	}
-	times = 0;
-	do
+	else
 	{
-		times++;
-		ret = send_cmd(index, "active");
-		if (ret != 0)
-		{
-			continue;
-		}
-		string status = get_status(index);
-		stringstream ss;
-		int _index = status.find_first_not_of("\r\n");
-		if (_index == -1)
-		{
-			continue;
-		}
-		status = status.substr(_index, status.size());
-		_index = status.find("\r\n");
-		if (_index != -1)
-		{
-			status = status.substr(0, _index);
-		}
-		ss << status;
-		int is_enable;
-		ss >> is_enable;
-		if (is_enable == 0 || is_enable == 1)
-		{
-			*flag = is_enable;
-			return 0;
-		}
-	} while (times < 100);
-	return -1;
+		*flag = enabled[index];
+		return 0;
+	}
 }
 int motion_axis_wait_finished(axis_t index)
 {
@@ -477,171 +590,25 @@ int motion_axis_wait_finished(axis_t index)
 }
 int motion_axis_finished(axis_t index, char* flag)
 {
-	int times = 0;
-	int ret = 0;
-	do
-	{
-		times++;
-		ret == select_axis(index);
-		if (ret == 0)
-		{
-			break;
-		}
-	} while (times < 100);
-
-	if (ret == -1)
+	if (finished[index] != 0 && finished[index] != 1)
 	{
 		return -1;
 	}
-	times = 0;
-	do
+	else
 	{
-		times++;
-		ret = send_cmd(index,"stopped");
-		if (ret != 0)
-		{
-			continue;
-		}
-		string status = get_status(index);
-		stringstream ss;
-		int _index = status.find_first_not_of("\r\n");
-		if (_index == -1)
-		{
-			continue;
-		}
-		status = status.substr(_index, status.size());
-		_index = status.find("\r\n");
-		if (_index != -1)
-		{
-			status = status.substr(0, _index);
-		}
-		ss << status;
-		int is_stopped;
-		ss >> is_stopped;
-		if (is_stopped == -1 || is_stopped == 0 || is_stopped == 1 || is_stopped == 2)
-		{
-			if (is_stopped == 2)
-			{
-				*flag = 1;
-			}
-			else
-			{
-				*flag = 0;
-			}
-			return 0;
-		}
-	} while (times < 100);
-	return -1;
+		*flag = finished[index];
+		return 0;
+	}
 }
 int motion_axis_position(axis_t index, int32_t* p)
 {
-	int times = 0;
-	int ret = 0;
-	do
-	{
-		times++;
-		ret == select_axis(index);
-		if (ret == 0)
-		{
-			break;
-		}
-	} while (times < 100);
-
-	if (ret == -1)
-	{
-		return -1;
-	}
-	times = 0;
-	do
-	{
-		times++;
-		ret = send_cmd(index,"pfb");
-		if (ret != 0)
-		{
-			continue;
-		}
-		string status = get_status(index);
-		stringstream ss;
-		int _index = status.find_first_not_of("\r\n");
-		if (_index == -1)
-		{
-			continue;
-		}
-		status = status.substr(_index, status.size());
-		_index = status.find(".00");
-		if (_index != -1)
-		{
-			status = status.substr(0, _index);
-		}
-		if (status != "")
-		{
-			ss << status;
-			ss >> *p;
-			return 0;
-		}
-		else
-		{
-			continue;
-		}
-		Sleep(50);
-	} while (times < 5);
-	return -1;
+	*p = pos[index];
+	return 0;
 }
 int motion_axis_velocity(axis_t index, int32_t* v)
 {
-	int times = 0;
-	int ret = 0;
-	do
-	{
-		times++;
-		ret == select_axis(index);
-		if (ret == 0)
-		{
-			break;
-		}
-	} while (times < 100);
-
-	if (ret == -1)
-	{
-		return -1;
-	}
-	times = 0;
-	do
-	{
-		times++;
-		ret = send_cmd(index,"v");
-		if (ret != 0)
-		{
-			continue;
-		}
-		string status = get_status(index);
-		stringstream ss;
-		int _index = status.find_first_not_of("\r\n");
-		if (_index == -1)
-		{
-			continue;
-		}
-		status = status.substr(_index, status.size());
-		_index = status.find(" ");
-		if (_index != -1)
-		{
-			status = status.substr(0, _index);
-		}
-		if (status != "")
-		{
-			ss << status;
-			double vel = 0;
-			ss >> vel;
-			*v = (int32_t)(vel * 131072.0 / 60);
-			return 0;
-		}
-		else
-		{
-			continue;
-		}
-		Sleep(50);
-	} while (times < 5);
-	return -1;
+	*v = vel[index];
+	return 0;
 }
 int motion_axis_halted(axis_t index, char* flag)
 {
@@ -649,215 +616,169 @@ int motion_axis_halted(axis_t index, char* flag)
 }
 int motion_axis_enable(axis_t index)
 {
-	int times = 0;
-	int ret = 0;
-	do
+	for (int i = 0; i < 5; i++)
 	{
-		times++;
-		ret == select_axis(index);
-		if (ret == 0)
+		ret[index] = 5;
+		cmd[index] = "en";
+		while (ret[index] > 0)
 		{
-			break;
+			Sleep(1);
 		}
-	} while (times < 100);
-
-	if (ret == -1)
-	{
-		return -1;
-	}
-	times = 0;
-	char flag = 0;
-	do
-	{
-		times++;
-		send_cmd(index,"en");
-		flag = 0;
-		int ret = motion_axis_enabled(index, &flag);
-		if (0 != ret)
+		if (ret[index] == -1)
 		{
 			continue;
 		}
 		else
 		{
-			if (flag == 1)
+			char flag = 0;
+			ret[index] = motion_axis_enabled(index, &flag);
+			if (0 == ret[index])
 			{
-				break;
-			}
-			else
-			{
-				continue;
-			}
-		}
-		Sleep(50);
-	} while (times < 5);
-	if (flag == 0)
-	{
-		return -1;
-	}
-	else
-	{
-		return 0;
-	}
-}
-int motion_axis_disable(axis_t index)
-{
-	int times = 0;
-	int ret = 0;
-	do
-	{
-		times++;
-		ret == select_axis(index);
-		if (ret == 0)
-		{
-			break;
-		}
-	} while (times < 100);
-
-	if (ret == -1)
-	{
-		return -1;
-	}
-
-	times = 0;
-	char flag = 1;
-	do
-	{
-		times++;
-		send_cmd(index, "k");
-		flag = 1;
-		int ret = motion_axis_enabled(index, &flag);
-		if (0 != ret)
-		{
-			continue;
-		}
-		else
-		{
-			if (flag == 0)
-			{
-				return 0;
-			}
-			else
-			{
-				continue;
-			}
-		}
-	} while (times < 100);
-	if (flag == 1)
-	{
-		return -1;
-	}
-	else
-	{
-		return 0;
-	}
-}
-int motion_axis_stop(axis_t index)
-{
-	int times = 0;
-	int ret = 0;
-	do
-	{
-		times++;
-		ret == select_axis(index);
-		if (ret == 0)
-		{
-			break;
-		}
-	} while (times < 100);
-
-	if (ret == -1)
-	{
-		return -1;
-	}
-	times = 0;
-	char flag = 0;
-	do
-	{
-		times++;
-		send_cmd(index,"stop");
-		flag = 0;
-		int ret = motion_axis_stopped(index, &flag);
-		if (0 != ret)
-		{
-			continue;
-		}
-		else
-		{
-			if (flag == 1)
-			{
-				return 0;
-			}
-			else
-			{
-				continue;
-			}
-		}
-	} while (times < 100);
-	if (flag == 0)
-	{
-		return -1;
-	}
-	else
-	{
-		return 0;
-	}
-}
-int motion_axis_p2p(axis_t index, int32_t p, int32_t vel)
-{
-	int times = 0;
-	int ret = 0;
-	do
-	{
-		times++;
-		ret == select_axis(index);
-		if (ret == 0)
-		{
-			break;
-		}
-	} while (times < 100);
-
-	if (ret == -1)
-	{
-		return -1;
-	}
-	times = 0;
-	char flag = 0;
-	do
-	{
-		times++;
-		char buffer[256];
-		send_cmd(index, "moveabs " + int_to_str(p) + " " + double_to_str(vel * 1.0 / 131072 * 60));
-		flag = 0;
-		Sleep(100);
-		int ret = motion_axis_stopped(index, &flag);
-		if (0 != ret)
-		{
-			continue;
-		}
-		else
-		{
-			if (flag == 1)
-			{
-				ret = motion_axis_finished(index, &flag);
-				if (0 != ret)
+				if (flag == 1)
+				{
+					return 0;
+				}
+				else
 				{
 					continue;
 				}
-				if (flag != 0)
+			}
+			else
+			{
+				continue;
+			}
+		}
+		Sleep(10);
+	}
+	return -1;
+}
+int motion_axis_disable(axis_t index)
+{
+	for (int i = 0; i < 5; i++)
+	{
+		ret[index] = 5;
+		cmd[index] = "k";
+		while (ret[index] > 0)
+		{
+			Sleep(1);
+		}
+		if (ret[index] == -1)
+		{
+			continue;
+		}
+		else
+		{
+			char flag = 0;
+			ret[index] = motion_axis_enabled(index, &flag);
+			if (0 == ret[index])
+			{
+				if (flag == 0)
 				{
-					int32_t pos_cur = 0;
-					ret = motion_axis_position(index, &pos_cur);
-					if (0 != ret)
+					return 0;
+				}
+				else
+				{
+					continue;
+				}
+			}
+			else
+			{
+				continue;
+			}
+		}
+		Sleep(10);
+	}
+	return -1;
+}
+int motion_axis_stop(axis_t index)
+{
+	for (int i = 0; i < 5; i++)
+	{
+		ret[index] = 5;
+		cmd[index] = "stop";
+		while (ret[index] > 0)
+		{
+			Sleep(1);
+		}
+		if (ret[index] == -1)
+		{
+			continue;
+		}
+		else
+		{
+			char flag = 0;
+			ret[index] = motion_axis_stopped(index, &flag);
+			if (0 == ret[index])
+			{
+				if (flag == 1)
+				{
+					return 0;
+				}
+				else
+				{
+					continue;
+				}
+			}
+			else
+			{
+				continue;
+			}
+		}
+		Sleep(10);
+	}
+	return -1;
+}
+int motion_axis_p2p(axis_t index, int32_t p, int32_t vel)
+{
+	for (int i = 0; i < 5; i++)
+	{
+		ret[index] = 5;
+		cmd[index] = "moveabs " + int_to_str(p) + " " + double_to_str(vel * 1.0 / 131072 * 60);
+		while (ret[index] > 0)
+		{
+			Sleep(1);
+		}
+		if (ret[index] == -1)
+		{
+			continue;
+		}
+		else
+		{
+			char flag = 0;
+			ret[index] = motion_axis_stopped(index, &flag);
+			if (0 != ret[index])
+			{
+				continue;
+			}
+			else
+			{
+				if (flag == 1)
+				{
+					ret[index] = motion_axis_finished(index, &flag);
+					if (0 != ret[index])
 					{
 						continue;
 					}
-					if (abs(pos_cur - p) < 500)
+					if (flag != 0)
 					{
-						return 0;
+						int32_t pos_cur = 0;
+						ret[index] = motion_axis_position(index, &pos_cur);
+						if (0 != ret[index])
+						{
+							continue;
+						}
+						if (abs(pos_cur - p) < 500)
+						{
+							return 0;
+						}
+						else
+						{
+							continue;
+						}
 					}
 					else
 					{
-						continue;
+						return 0;
 					}
 				}
 				else
@@ -865,12 +786,9 @@ int motion_axis_p2p(axis_t index, int32_t p, int32_t vel)
 					return 0;
 				}
 			}
-			else
-			{
-				return 0;
-			}
 		}
-	} while (times < 5);
+		Sleep(10);
+	}
 	return -1;
 }
 int motion_axis_home(axis_t index)
@@ -1058,11 +976,15 @@ int controller_lock()
 		serial_port[i].fifo.init(256);
 		serial_port[i].Leave_Critical();
 		serial_port[i].OpenListenThread();
+		std::thread thrd(serial_update, i);
+		thrd.detach();
 	}
 	return 0;
 }
 int controller_unlock()
 {
+	serial_stop = true;
+	Sleep(100);
 	for (int i = 0; i < SERIAL_SIZE; i++)
 	{
 		serial_port[i].CloseListenTread();
