@@ -29,6 +29,8 @@ mouseClick(0)
 
 LaserWidget::~LaserWidget()
 {
+
+
 	delete ui;
 }
 
@@ -52,6 +54,8 @@ void LaserWidget::initSignals()
 	connect(ui->laserTwoBtn, SIGNAL(clicked()), this, SLOT(onLaserTwoBtnClicked()));
 	connect(ui->laserThreeBtn, SIGNAL(clicked()), this, SLOT(onLaserThreeBtnClicked()));
 	connect(ui->laserFourBtn, SIGNAL(clicked()), this, SLOT(onLaserFourBtnClicked()));
+	connect(ui->laserCrossOneBtn, SIGNAL(clicked()), this, SLOT(onLaserCrossOneBtnClicked()));
+	connect(ui->laserCrossTwoBtn, SIGNAL(clicked()), this, SLOT(onLaserCrossTwoBtnClicked()));
 	connect(&CMDParser::getInstance(), SIGNAL(updateLaserData(short*, int)),
 		this, SLOT(onUpdateLaserData(short*, int)));
 	connect(dataRefresh, SIGNAL(timeout()), this, SLOT(onDataRefreshCallBack()));
@@ -62,6 +66,7 @@ void LaserWidget::initVariables()
 {
 	mLaserCnt = 0;
 	dataRefresh = new QTimer(this);
+
 	onUpdateLaserData(NULL, 0);
 }
 
@@ -127,6 +132,8 @@ void LaserWidget::onRefStopBtnClicked()
 
 void LaserWidget::onLaserOneBtnClicked()
 {
+	
+	
 	if(resultsQualityJudge(distAvrFirst))
 		QMessageBox::information(this,
 		tr("Quality OK"),
@@ -141,6 +148,7 @@ void LaserWidget::onLaserOneBtnClicked()
 
 void LaserWidget::onLaserTwoBtnClicked()
 {
+
 	if (resultsQualityJudge(distAvrSecond))
 		QMessageBox::information(this,
 		tr("Quality OK"),
@@ -169,6 +177,7 @@ void LaserWidget::onLaserThreeBtnClicked()
 
 void LaserWidget::onLaserFourBtnClicked()
 {
+	
 	if (resultsQualityJudge(distAvrFourth))
 		QMessageBox::information(this,
 		tr("Quality OK"),
@@ -181,7 +190,35 @@ void LaserWidget::onLaserFourBtnClicked()
 		);
 }
 
+void LaserWidget::onLaserCrossOneBtnClicked()
+{
+	double distGap = distFirstLeft - distSecondRight;
+	if (resultsCrossQuality(distGap))
+		QMessageBox::information(this,
+		tr("Quality OK"),
+		QString("1st&2nd laser gap is resonable.")
+		);
+	else
+		QMessageBox::critical(this,
+		tr("Quality Bad"),
+		QString("1st&2nd laser gap is ridiculous!")
+		);
+}
 
+void LaserWidget::onLaserCrossTwoBtnClicked()
+{
+	double distGap = distFirstRight - distFourthLeft;
+	if (resultsCrossQuality(distGap))
+		QMessageBox::information(this,
+		tr("Quality OK"),
+		QString("1st&4th laser gap is resonable.")
+		);
+	else
+		QMessageBox::critical(this,
+		tr("Quality Bad"),
+		QString("1st&4th laser gap is ridiculous!")
+		);
+}
 /******************************
 * 函数名：onDataRefreshCallBack
 * 函数功能：dataRefesh的周期回调函数
@@ -267,18 +304,18 @@ void LaserWidget::setLaserData(QPaintDevice *pPaintDev, QRect rect, short buf[],
 	if (buf == NULL) return;
 	QPolygon polygon;
 	polygon.clear();
-	qDebug() << "mLaserCnt:" << mLaserCnt;
-	
+	//qDebug() << "mLaserCnt:" << mLaserCnt;
 	std::vector<double> distFirst;
 	std::vector<double> distSecond;
 	std::vector<double> distThird;
 	std::vector<double> distFourth;
 
+	double x, y, dist;
 	for (int i = 0; i < cnt; i++)
 	{
-		double x = laserCenterX + (float)laserRadius*buf[2 * i + 1] / 4000;
-		double y = laserCenterY - (float)laserRadius*buf[2 * i] / 4000;
-		double dist = sqrt(x * x + y * y);
+		x = laserCenterX + (float)laserRadius*buf[2 * i + 1] / 4000;
+		y = laserCenterY - (float)laserRadius*buf[2 * i] / 4000;
+		dist = sqrt(x * x + y * y);
 		
 		if ((i % 640) == 0)
 		{
@@ -332,11 +369,11 @@ void LaserWidget::setLaserData(QPaintDevice *pPaintDev, QRect rect, short buf[],
 		}
 		if ((buf[2 * i] > 4000) || (buf[2 * i] < -4000)) continue;
 		if ((buf[2 * i + 1] > 4000) || (buf[2 * i + 1] < -4000)) continue;
-		qDebug()<<"mLaserData:"<<i<<","<< (buf[2 * i])<<","<<(buf[2 * i + 1]);
+	//	qDebug()<<"mLaserData:"<<i<<","<< (buf[2 * i])<<","<<(buf[2 * i + 1]);
 		painter.drawEllipse(laserCenterX + (float)laserRadius*buf[2 * i+1] / 4000,
 			laserCenterY - (float)laserRadius*buf[2 * i ] / 4000, 2, 2);
-		qDebug() << "x:" << laserCenterX + (float)laserRadius*buf[2 * i + 1] / 4000 << ","
-			"y:" << laserCenterY - (float)laserRadius*buf[2 * i] / 4000;
+	//	qDebug() << "x:" << laserCenterX + (float)laserRadius*buf[2 * i + 1] / 4000 << ","
+		//	"y:" << laserCenterY - (float)laserRadius*buf[2 * i] / 4000;
 
 		if (i < 640)
 			distFourth.push_back(dist);
@@ -348,29 +385,25 @@ void LaserWidget::setLaserData(QPaintDevice *pPaintDev, QRect rect, short buf[],
 			distThird.push_back(dist);
 
 	}
+
 	///First laser avr dist
-	calcAverDist(distFirst, distAvrFirst);
-	qDebug() << "distAvrFirst:" << distAvrFirst; 
-
+	calcAverDist(distFirst, distAvrFirst, distFirstLeft, distFirstRight);
+	//qDebug() << "distAvrFirst:" << distAvrFirst;
 	///Second laser avr dist
-	calcAverDist(distSecond, distAvrSecond);
-
-	///Third laser avr dist
-	calcAverDist(distThird, distAvrThird);
+	calcAverDist(distSecond, distAvrSecond, distSecondLeft, distSecondRight);
 
 	///Fourth laser avr dist
-	calcAverDist(distFourth, distAvrFourth);
+	calcAverDist(distFourth, distAvrFourth, distFourthLeft, distFourthRight);
 
 	distFirst.clear();
 	distSecond.clear();
-	distThird.clear();
 	distFourth.clear();
 }
 
 bool LaserWidget::resultsQualityJudge(double distAvr)
 {
 	QIcon icon;
-	if ((distAvr - 1500) > DETECTACCURACY)
+	if (abs(distAvr - 1500) > DETECTACCURACY)
 	{
 		icon.addFile(QStringLiteral(":/images/images/cry.png"), QSize(), QIcon::Normal, QIcon::On);
 		ui->resultBtn->setIcon(icon);
@@ -388,21 +421,50 @@ bool LaserWidget::resultsQualityJudge(double distAvr)
 		
 }
 
+bool LaserWidget::resultsCrossQuality(double distSide)
+{
+	QIcon icon;
+	if (abs(distSide) > DETECTACCURACY)
+	{
+		icon.addFile(QStringLiteral(":/images/images/cry.png"), QSize(), QIcon::Normal, QIcon::On);
+		ui->resultBtn->setIcon(icon);
+		ui->resultBtn->setIconSize(QSize(120, 120));
+		return false;
+	}
+
+	else
+	{
+		icon.addFile(QStringLiteral(":/images/images/smile.png"), QSize(), QIcon::Normal, QIcon::Off);
+		ui->resultBtn->setIcon(icon);
+		ui->resultBtn->setIconSize(QSize(120, 120));
+		return true;
+	}
+
+}
+
 ///calc average distance
-double LaserWidget::calcAverDist(std::vector<double> dist, double& distAvr)
+void LaserWidget::calcAverDist(std::vector<double> dist, double& distAvr, double& distLeft, double& distRight)
 {
 	
-	double distAll = 0.0;
-	qDebug() << dist.size();
+	double distAll = 0.0; 
+	distLeft = 0.0;
+	distRight = 0.0;
+	//qDebug() << dist.size();
 	for (int m = 0; m < dist.size(); ++m)
 	{
 		distAll += dist[m];
-		qDebug() << "distFirst:" << dist[m];
+		//qDebug() << "distFirst:" << dist[m];
+		if (m < 30)
+			distLeft += dist[m];
+		
+		if (m > dist.size() - 30 - 1)
+			distRight += dist[m];
 	}
 
-	distAvr = distAll / dist.size();
-	
-	return distAvr;
+	distAvr = distAll / 640;
+	distLeft = distLeft / 30;
+	distRight = distRight / 30;
+
 }
 
 void LaserWidget::paintEvent(QPaintEvent *)
@@ -412,7 +474,7 @@ void LaserWidget::paintEvent(QPaintEvent *)
 	//int heigth = widgetSize.height();
 	int width = 700;
 	int heigth = 700;
-	qDebug() << width << "," << heigth;
+	//qDebug() << width << "," << heigth;
 	int minLength = width < heigth ? width : heigth;
 	if (minLength < 500) return;
 	QRect laserRect;
@@ -449,7 +511,7 @@ void LaserWidget::onUpdateLaserData(short buf[], int cnt)
 {
 	if (buf)
 	{
-		qDebug() << "cnt:" << cnt << ", mLaserCnt:" << mLaserCnt;
+		//qDebug() << "cnt:" << cnt << ", mLaserCnt:" << mLaserCnt;
 		mLaserCnt = cnt * 4 < (int)sizeof(mLaserData) ? cnt * 4 : (int)sizeof(mLaserData);
 		mLaserCnt /= 4;
 		memcpy(mLaserData, buf, 4 * mLaserCnt);

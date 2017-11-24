@@ -23,9 +23,9 @@ protected:
 public:
 	void addCoordinate(QPaintDevice *pPaintDev, QRect rect);
 	void setLaserData(QPaintDevice *pPaintDev, QRect rect, short buf[], int cnt);
-	double calcAverDist(std::vector<double>, double &);
+	void calcAverDist(std::vector<double>, double &, double&, double&);
 	bool resultsQualityJudge(double);
-	
+	bool resultsCrossQuality(double);
 private slots:
 	void onUpLaserClearBtnClicked();
 	void onUpLaserTestBtnClicked();
@@ -41,6 +41,8 @@ private slots:
 	void onLaserTwoBtnClicked();
 	void onLaserThreeBtnClicked();
 	void onLaserFourBtnClicked();
+	void onLaserCrossOneBtnClicked();
+	void onLaserCrossTwoBtnClicked();
 	void onUpdateLaserData(short*, int);
 private:
 	Ui::LaserWidget *ui;
@@ -51,10 +53,11 @@ private:
 	int laserRadius;
 	int mouseClick;
 
-	double distAvrFirst;
-	double distAvrSecond;
+	
+	double distAvrFirst, distFirstLeft, distFirstRight;
+	double distAvrSecond, distSecondLeft, distSecondRight;;
 	double distAvrThird;
-	double distAvrFourth;
+	double distAvrFourth, distFourthLeft, distFourthRight;;
 
 	QTimer *dataRefresh;
 };

@@ -129,7 +129,7 @@
    <property name="title">
     <string>数据刷新周期</string>
    </property>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -251,6 +251,32 @@
       <widget class="QPushButton" name="laserFourBtn">
        <property name="text">
         <string>4_laser</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+   <widget class="QWidget" name="">
+    <property name="geometry">
+     <rect>
+      <x>260</x>
+      <y>50</y>
+      <width>77</width>
+      <height>54</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="verticalLayout_2">
+     <item>
+      <widget class="QPushButton" name="laserCrossOneBtn">
+       <property name="text">
+        <string>1_2laser</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="laserCrossTwoBtn">
+       <property name="text">
+        <string>1_4laser</string>
        </property>
       </widget>
      </item>
