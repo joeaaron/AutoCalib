@@ -302,74 +302,26 @@
            </item>
            <item row="0" column="2">
             <widget class="QCheckBox" name="fallCheckBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>F/NF</string>
              </property>
             </widget>
            </item>
-           <item row="0" column="5">
-            <spacer name="horizontalSpacer">
+           <item row="0" column="3">
+            <spacer name="horizontalSpacer_4">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>198</width>
-               <height>49</height>
+               <width>40</width>
+               <height>20</height>
               </size>
              </property>
             </spacer>
-           </item>
-           <item row="0" column="6">
-            <widget class="QLineEdit" name="offsetlineEdit"/>
-           </item>
-           <item row="0" column="7">
-            <widget class="QPushButton" name="displayBtn">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="font">
-              <font>
-               <family>Consolas</family>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>DISPLAY</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="8">
-            <widget class="QPushButton" name="saveImgBtn">
-             <property name="enabled">
-              <bool>false</bool>
-             </property>
-             <property name="font">
-              <font>
-               <family>Consolas</family>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>SAVE</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="9">
-            <widget class="QPushButton" name="testBtn">
-             <property name="font">
-              <font>
-               <family>Consolas</family>
-               <weight>75</weight>
-               <bold>true</bold>
-              </font>
-             </property>
-             <property name="text">
-              <string>TEST</string>
-             </property>
-            </widget>
            </item>
            <item row="0" column="4">
             <widget class="QComboBox" name="calibIDCBox">
@@ -418,18 +370,84 @@
              </item>
             </widget>
            </item>
-           <item row="0" column="3">
-            <spacer name="horizontalSpacer_4">
+           <item row="0" column="5">
+            <spacer name="horizontalSpacer">
              <property name="orientation">
               <enum>Qt::Horizontal</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>40</width>
-               <height>20</height>
+               <width>198</width>
+               <height>49</height>
               </size>
              </property>
             </spacer>
+           </item>
+           <item row="0" column="6">
+            <widget class="QComboBox" name="ipCBox">
+             <property name="minimumSize">
+              <size>
+               <width>141</width>
+               <height>20</height>
+              </size>
+             </property>
+             <property name="editable">
+              <bool>true</bool>
+             </property>
+             <item>
+              <property name="text">
+               <string>192.168.200.164</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item row="0" column="7">
+            <widget class="QPushButton" name="displayBtn">
+             <property name="enabled">
+              <bool>true</bool>
+             </property>
+             <property name="font">
+              <font>
+               <family>Consolas</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>DISPLAY</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="8">
+            <widget class="QPushButton" name="saveImgBtn">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="font">
+              <font>
+               <family>Consolas</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>SAVE</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="9">
+            <widget class="QPushButton" name="testBtn">
+             <property name="font">
+              <font>
+               <family>Consolas</family>
+               <weight>75</weight>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="text">
+              <string>TEST</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>

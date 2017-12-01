@@ -80,7 +80,11 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="visionPortLineEdit"/>
+           <widget class="QLineEdit" name="visionPortLineEdit">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
+           </widget>
           </item>
          </layout>
         </item>

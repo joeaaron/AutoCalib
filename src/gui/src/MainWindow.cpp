@@ -70,7 +70,7 @@ void MainWindow::initUi(){
     //set up laserdetect widget
 	laserdetectWidget = new LaserWidget();
 	//set up init widget
-	setCentralWidget(networkWidget);
+	setCentralWidget(autocalibWidget);
 	
 
 }
@@ -85,7 +85,7 @@ void MainWindow::initSignals(){
 	connect(networkWidget, SIGNAL(motionDisconnected()), setupWidget, SIGNAL(motionDisconnected()));
 	connect(networkWidget, SIGNAL(motionConnected()), calibrationWidget, SIGNAL(motionConnected()));
 	connect(networkWidget, SIGNAL(motionDisconnected()), calibrationWidget, SIGNAL(motionDisconnected()));
-	connect(autocalibWidget, SIGNAL(Connect()), networkWidget, SIGNAL(autocontrolconnect()));
+	connect(autocalibWidget, SIGNAL(Connect()), ui_mainwindow->connectAct, SIGNAL(triggered()));
 }
 
 void MainWindow::onConnectAction(){

@@ -240,7 +240,7 @@ void AutoCalibWidget::onTestBtnClicked(){
 
 	//sleep(10000);
 	//ui->processLog->clear();
-
+	//pushFiles();
 	backUpFile();
 }
 
@@ -252,11 +252,11 @@ void AutoCalibWidget::backUpFile()
 	std::string path = buf;
 	std::string dirPath = path + "\\images\\";
 	//2017/11/1 fix something 
-	std::string backup = "C:\\Users\\JohnShua\\Desktop\\COWA_CALIB\\";
+	std::string backup = "D:\\SHARE";
 	std::string mkDir = "md " + backup + "images";
 	system(mkDir.c_str());
 
-	const char* dstPath = "C:\\Users\\JohnShua\\Desktop\\COWA_CALIB\\images";
+	const char* dstPath = "D:\\SHARE\\images";
 
 	File::copyDir(dirPath.c_str(), dstPath);
 }
@@ -581,8 +581,8 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 {
 	qint32 expXPos, expYPos, expZPos, expRPos;
 	qint32 expXVel, expYVel, expZVel, expRVel;
-	QString value = ui->offsetlineEdit->text();
-	qint32 offset = value.toInt();
+	//QString value = ui->offsetlineEdit->text();
+	//qint32 offset = value.toInt();
 	if (!smallPanSaveFinish)
 	{
 		//expXPos = xyz_xPoint_1.at(i) * 10000 / M_PI / 23.87 * 3;
@@ -723,22 +723,31 @@ void AutoCalibWidget::triggerPush(QString pushCommand, qint32 time)
 void AutoCalibWidget::pushFiles()
 {
 	int pushTimeConsuming;       
+	
+	//QString connectCommand("adb connect 192.168.200.164");
+	QString connectCommand = "adb connect " + ui->ipCBox->currentText();
+	pushTimeConsuming = 1000;              //find the appropriate time
+	triggerPush(connectCommand, pushTimeConsuming);
 
 	QString binFilesCommand("adb push ./images/cowa_cam_config/aligned /data/cowa_cam_config");
-	pushTimeConsuming = 40000;              //find the appropriate time
+	pushTimeConsuming = 15000;              //find the appropriate time
 	triggerPush(binFilesCommand, pushTimeConsuming);
 
 	QString yDividingCommand("adb push yDividing.txt /data/cowa_cam_config");
-	pushTimeConsuming = 2000;
+	pushTimeConsuming = 500;
 	triggerPush(yDividingCommand, pushTimeConsuming);
 
 	/*QString cowarobotCommand("adb push cowarobot /system/bin");
 	pushTimeConsuming = 2000;
 	triggerPush(cowarobotCommand, pushTimeConsuming);*/
 
-	QString cameraScCommand("adb push camera.sc8830.so /system/lib/hw");
-	pushTimeConsuming = 2000;
-	triggerPush(cameraScCommand, pushTimeConsuming);
+	//QString cameraScCommand("adb push camera.sc8830.so /system/lib/hw");
+	//pushTimeConsuming = 2000;
+	//triggerPush(cameraScCommand, pushTimeConsuming);
+
+	QMessageBox::information(this,
+		tr("Push Finished"),
+		QString("The TransformationTableBin files has been pushed successfully."));
 }
 
 void AutoCalibWidget::onCalibBtnClicked(){
@@ -1246,19 +1255,19 @@ void AutoCalibWidget::cowaCalib()
 	std::string dirPath = path + "\\images\\";
 	std::string xmlDir = path + "\\xml\\";
 	std::string xmlBottomDir = path + "\\xmlbottom\\";
-	std::string backup = "D:\\calibFiles\\";
+	//std::string backup = "D:\\calibFiles\\";
 
 	std::string mkDir1 = "md " + dirPath + "cowa_cam_config";
 	std::string mkDir2 = "md " + dirPath + "cowa_cam_config\\" + "unaligned";
 	std::string mkDir3 = "md " + dirPath + "cowa_cam_config\\" + "aligned";
-	std::string mkDir4 = "md " + backup + "cowa_R1";
+	//std::string mkDir4 = "md " + backup + "cowa_R1";
 
 	system(mkDir1.c_str());
 	system(mkDir2.c_str());
 	system(mkDir3.c_str());
-	system(mkDir4.c_str());
+	//system(mkDir4.c_str());
 
-	const char* dstPath = "D:\\calibFiles\\cowa_R1";
+	//const char* dstPath = "D:\\calibFiles\\cowa_R1";
 
 	for (int i = calibID; i <= 8; i++)
 	{
@@ -1403,17 +1412,9 @@ void AutoCalibWidget::cowaCalib()
 
 	}
 
-	/*std::cout << "Press any key to continue!" << std::endl;
-	getchar();*/
-	//get the current dir
-	
-	char buffer[1000];
-	GetCurrentDirectory(1000, buffer);
-	std::cout << buffer << std::endl;
 	///adb push .bin files to suitcase
-	//pushFiles();  //to be finished
+	pushFiles();  //to be finished
 
-	//File::copyDir(dirPath.c_str(), dstPath);
 }
 
 void AutoCalibWidget::onTopFallLaserCalib()
@@ -1548,12 +1549,12 @@ void AutoCalibWidget::onMotionStart(){
 	clearVectorArray();
 	//onSmallBoardMotionPro();
 	onStartBtnToggled(false);
-	//calib the files
-	//onCalibBtnClicked();
-	//terminate the procedure
-	//onStopBtnClicked();
+	
 	///copy files to another dir
 	backUpFile();
+
+	//calib the files
+	//onCalibBtnClicked();
 	
 }
 
