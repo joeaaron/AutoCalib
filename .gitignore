@@ -791,3 +791,13 @@ build/src/gui/resource3.h
 build/src/gui/gui3.rc
 build/src/gui/gui3.aps
 build/src/gui/gui.dir/Debug/gui3.res
+build/src/gui/gui.dir/Debug/gui4.res
+build/src/gui/images/cowa_cam_config/x6.bmp
+build/src/gui/images/cowa_cam_config/x5.bmp
+build/src/gui/images/cowa_cam_config/x4.bmp
+build/src/gui/images/cowa_cam_config/x3.bmp
+build/src/gui/images/cowa_cam_config/x2.bmp
+build/src/gui/images/cowa_cam_config/x1.bmp
+build/src/gui/resource4.h
+build/src/gui/gui4.rc
+build/src/gui/gui4.aps

@@ -241,7 +241,9 @@ void AutoCalibWidget::onTestBtnClicked(){
 	//sleep(10000);
 	//ui->processLog->clear();
 	//pushFiles();
-	backUpFile();
+	//backUpFile();
+	std::string dirPath = "./images/";
+	File::delAllFiles(dirPath);
 }
 
 void AutoCalibWidget::backUpFile()
@@ -1651,6 +1653,11 @@ void AutoCalibWidget::onStopBtnClicked(){
 	
 	//disconnect the controller
 	onConnectClicked();
+	
+	//del all files in dir_images
+	std::string dirPath = "./images/";
+	File::delAllFiles(dirPath);
+	
 	exit(0);
 }
 
