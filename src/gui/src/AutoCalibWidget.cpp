@@ -1644,12 +1644,8 @@ void AutoCalibWidget::onStopBtnClicked(){
 	//ui->processLog->clear();
 	
 	//close the light
-	quint8 _data[4];
-	_data[0] = 0;
-	_data[1] = 0;
-	_data[2] = 0;
-	_data[3] = 0;
-	MotionController::getInstance().setDigitalIO(_data, 3);
+	quint8 _data[4] = {0};
+	MotionController::getInstance().setDigitalIO(_data, 4);
 	
 	//disconnect the controller
 	onConnectClicked();
