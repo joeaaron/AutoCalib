@@ -95,6 +95,12 @@ NETWORK_API void CMDParser::sendCmd(CMD& cmd){
 	tcpSocket->write(block);
 }
 
+NETWORK_API void CMDParser::getSuitcaseNum(){
+	//define open camera cmd
+	CMD suitcaseNumCmd(CMD::CMD_SUITCASE, CMD::CMD_SUITCASE_NUM);
+	sendCmd(suitcaseNumCmd);
+}
+
 NETWORK_API void CMDParser::openCam(){
 	//define open camera cmd
 	CMD openCmd(CMD::CMD_CAMERA, CMD::CMD_CAMERA_OPEN);
@@ -411,6 +417,13 @@ void CMDParser::parseCmd(CMD* pCmd){
 			emit updateLaserData((short*)value, length / 4);
 		}
 		break;
+	case CMD::CMD_SUITCASE:
+	{
+		QByteArray num;
+		num = pCmd->value;
+		emit suitcaseNum(num);
+	}
+	break;
 	case CMD::CMD_REGISTER:
 		{
 			if (pCmd->length < 4)

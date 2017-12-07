@@ -60,6 +60,7 @@ namespace ECAT{
 			void bottomLaserClear();
 			void bottomLaserGet();
 			void allLaserGet();
+			void getSuitcaseNum();
 		signals:
 			void connected();
 			void disconnected();
@@ -74,6 +75,7 @@ namespace ECAT{
 			void exposureValue(quint32 /*value*/);
 			void laserValue(quint32 /*value*/);
 			void updateLaserData(short*, int);
+			void suitcaseNum(QByteArray);
 			private slots:
 			void onHandleSocketError(QAbstractSocket::SocketError);
 			void onReadyRead();

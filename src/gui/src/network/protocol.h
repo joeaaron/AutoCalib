@@ -23,7 +23,8 @@ public:
 		CMD_TOP_LASER = 7,		//cmd about top laser data
 		CMD_BOTTOM_LASER = 8,   //cmd about bottm laser data
 		CMD_ALL_LASER = 9,      //cmd about all laser
-		CMD_LASERPRO = 14
+		CMD_LASERPRO = 14,
+		CMD_SUITCASE = 15
 	};
 	//CMD parameter
 	enum CMD_PARAMETER : quint32	//to change enum as a quint32 type
@@ -44,6 +45,7 @@ public:
 		CMD_LASER_DATA,
 		CMD_LASER_TEST,
 		CMD_LASER_CLEAR,
+		CMD_SUITCASE_NUM,
 
 		CMD_REGISTER_LASER = 0x3005,	//register addr of laser:set 8,laser on,set 0,laser off
 		CMD_REGISTER_EXPOSURE = 0x3501,	//register addr of exposure value, range:0 ~ 255
@@ -81,6 +83,9 @@ public:
 		}
 			break;
 		case CMD::CMD_LASERPRO:{
+			initParameter(para, {});
+		}
+		case CMD::CMD_SUITCASE:{
 			initParameter(para, {});
 		}
 		default:
@@ -144,6 +149,7 @@ private:
 		qmap[CMD_LASER_DATA] = "AC+LASER_DATA";
 		qmap[CMD_LASER_TEST] = "AC+LASER_TEST";
 		qmap[CMD_LASER_CLEAR] = "AC+LASER_CLEAR";
+		qmap[CMD_SUITCASE_NUM] = "AC+GET_ID";
 		return qmap;
 	}
 	void initParameter(CMD_PARAMETER para,std::vector<int> subpara){

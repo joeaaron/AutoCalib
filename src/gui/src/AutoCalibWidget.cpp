@@ -100,16 +100,16 @@ void AutoCalibWidget::InitSignals()
 
 	connect(&CMDParser::getInstance(), SIGNAL(recvImage(quint16, quint16, quint16, QByteArray)),
 		this, SLOT(onRecvImage(quint16, quint16, quint16, QByteArray)));
+	connect(&CMDParser::getInstance(), SIGNAL(suitcaseNum(QByteArray)), this, SLOT(onGetSuitcaseNum(QByteArray)));
 	connect(this, SIGNAL(ReachLocation(qint32, bool)), this, SLOT(onImgTook(qint32, bool)));
 	connect(this, SIGNAL(progValue(double)), this, SLOT(onValueChanged(double)));
 	connect(this, SIGNAL(openTopLaser()), this, SLOT(onOpenTopLaser()));
 	connect(this, SIGNAL(openTopFallLaser()), this, SLOT(onOpenTopFallLaser()));
 	connect(this, SIGNAL(openBottomLaser()), this, SLOT(onOpenBottomLaser()));
 	connect(this, SIGNAL(getDeviation()), this, SLOT(onGetDeviation()));
-
+	
 	connect(ui->boardCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onBoardCheckBoxStateChanged(int)));
 	connect(ui->fallCheckBox, SIGNAL(stateChanged(int)), this, SLOT(onFallCheckBoxStateChanged(int)));
-
 	connect(ui->calibIDCBox, SIGNAL(activated(int)), this, SLOT(onCamComboActivated(int)));
 }
 
@@ -241,25 +241,26 @@ void AutoCalibWidget::onTestBtnClicked(){
 	//sleep(10000);
 	//ui->processLog->clear();
 	//pushFiles();
-	//backUpFile();
-	std::string dirPath = "./images/";
-	File::delAllFiles(dirPath);
+	backUpFile();
+	/*std::string dirPath = "./images/";
+	File::delAllFiles(dirPath);*/
+	//CMDParser::getInstance().getSuitcaseNum();
 }
 
 void AutoCalibWidget::backUpFile()
 {
 	char buf[1000];
 	GetCurrentDirectory(1000, buf);
-	//std::cout << buf << std::endl;
 	std::string path = buf;
 	std::string dirPath = path + "\\images\\";
-	//2017/11/1 fix something 
-	std::string backup = "D:\\SHARE";
-	std::string mkDir = "md " + backup + "images";
+	//2017/12/7 fix something 
+	std::string backup = "D:\\BACKUP\\";
+	std::string dirName = suitcaseID.toStdString();
+	std::string mkDir = "md " + backup + dirName;
 	system(mkDir.c_str());
-
-	const char* dstPath = "D:\\SHARE\\images";
-
+	std::string suitcasePath = backup.append(dirName);
+	const char* dstPath = suitcasePath.c_str();
+	////images backup
 	File::copyDir(dirPath.c_str(), dstPath);
 }
 
@@ -714,6 +715,10 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 		recvFinish = true;
 		//ui->displayBtn->setEnabled(true);
 	}
+}
+
+void AutoCalibWidget::onGetSuitcaseNum(QByteArray suitcaseNum){
+	suitcaseID = suitcaseNum;
 }
 
 void AutoCalibWidget::triggerPush(QString pushCommand, qint32 time)

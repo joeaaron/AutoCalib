@@ -217,6 +217,9 @@
           <layout class="QGridLayout" name="gridLayout_3">
            <item row="0" column="0">
             <widget class="QCheckBox" name="boardCheckBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="text">
               <string>S/L</string>
              </property>
@@ -228,6 +231,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout_3">
                <item>
                 <widget class="QLabel" name="label">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="font">
                   <font>
                    <family>Consolas</family>
@@ -242,6 +248,9 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="sCamlineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>41</width>
@@ -265,6 +274,9 @@
               <layout class="QHBoxLayout" name="horizontalLayout_4">
                <item>
                 <widget class="QLabel" name="label_2">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="font">
                   <font>
                    <family>Consolas</family>
@@ -279,6 +291,9 @@
                </item>
                <item>
                 <widget class="QLineEdit" name="lCamlineEdit">
+                 <property name="enabled">
+                  <bool>false</bool>
+                 </property>
                  <property name="minimumSize">
                   <size>
                    <width>41</width>
@@ -325,6 +340,9 @@
            </item>
            <item row="0" column="4">
             <widget class="QComboBox" name="calibIDCBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="editable">
               <bool>true</bool>
              </property>
@@ -385,6 +403,9 @@
            </item>
            <item row="0" column="6">
             <widget class="QComboBox" name="ipCBox">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="minimumSize">
               <size>
                <width>141</width>
@@ -404,7 +425,7 @@
            <item row="0" column="7">
             <widget class="QPushButton" name="displayBtn">
              <property name="enabled">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="font">
               <font>

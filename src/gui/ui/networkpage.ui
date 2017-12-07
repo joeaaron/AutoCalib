@@ -94,6 +94,9 @@
        <layout class="QHBoxLayout" name="horizontalLayout_5">
         <item>
          <widget class="QCheckBox" name="wifiCheckBox">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>Wifi</string>
           </property>
@@ -101,6 +104,9 @@
         </item>
         <item>
          <widget class="QPushButton" name="visionUSBRedirectBtn">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
           <property name="text">
            <string>USB_REDIRECT</string>
           </property>
@@ -119,7 +125,7 @@
         <item>
          <widget class="QPushButton" name="visionConnectBtn">
           <property name="enabled">
-           <bool>false</bool>
+           <bool>true</bool>
           </property>
           <property name="text">
            <string>CONNECT</string>

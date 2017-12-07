@@ -68,6 +68,7 @@ private slots:
 	void onCalibBtnClicked();
 	void onGetDeviation();
 	void onDisplayBtnClicked();
+	void onGetSuitcaseNum(QByteArray);
 	//void onCamComboActivated(int index);
 	void onMotionStart();
 	void onImgTook(qint32 camera, bool laser);
@@ -114,6 +115,7 @@ private:
 	qint32 endPoint;
 	QImage imageToSave;
 	QString savePath, saveDir;
+	QString suitcaseID;
 
 	bool smallPanSaveFinish;
 	bool bigPanSaveFinish;

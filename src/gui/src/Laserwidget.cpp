@@ -29,8 +29,6 @@ mouseClick(0)
 
 LaserWidget::~LaserWidget()
 {
-
-
 	delete ui;
 }
 

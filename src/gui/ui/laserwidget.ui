@@ -6,19 +6,22 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>963</width>
-    <height>733</height>
+    <width>1135</width>
+    <height>838</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <widget class="QGroupBox" name="groupBox">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>351</width>
+     <width>361</width>
      <height>51</height>
     </rect>
    </property>
@@ -73,7 +76,7 @@
     <rect>
      <x>10</x>
      <y>70</y>
-     <width>351</width>
+     <width>361</width>
      <height>51</height>
     </rect>
    </property>
@@ -121,12 +124,15 @@
    </widget>
   </widget>
   <widget class="QGroupBox" name="groupBox_3">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>320</y>
-     <width>351</width>
-     <height>61</height>
+     <width>411</width>
+     <height>71</height>
     </rect>
    </property>
    <property name="title">
@@ -138,7 +144,7 @@
       <x>10</x>
       <y>20</y>
       <width>392</width>
-      <height>40</height>
+      <height>47</height>
      </rect>
     </property>
     <layout class="QGridLayout" name="gridLayout">
@@ -184,48 +190,27 @@
    </widget>
   </widget>
   <widget class="QGroupBox" name="groupBox_2">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>140</y>
-     <width>351</width>
-     <height>161</height>
+     <width>411</width>
+     <height>171</height>
     </rect>
    </property>
    <property name="title">
     <string>结果检测</string>
    </property>
-   <widget class="QPushButton" name="resultBtn">
-    <property name="geometry">
-     <rect>
-      <x>110</x>
-      <y>20</y>
-      <width>131</width>
-      <height>131</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="icon">
-     <iconset resource="resources.qrc">
-      <normaloff>:/images/images/smile.png</normaloff>
-      <normalon>:/images/images/cry.png</normalon>:/images/images/smile.png</iconset>
-    </property>
-    <property name="iconSize">
-     <size>
-      <width>120</width>
-      <height>120</height>
-     </size>
-    </property>
-   </widget>
    <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>20</x>
       <y>30</y>
-      <width>77</width>
-      <height>112</height>
+      <width>95</width>
+      <height>135</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -264,8 +249,8 @@
      <rect>
       <x>260</x>
       <y>50</y>
-      <width>77</width>
-      <height>54</height>
+      <width>95</width>
+      <height>65</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -287,11 +272,14 @@
    </widget>
   </widget>
   <widget class="QGroupBox" name="groupBox_4">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="geometry">
     <rect>
      <x>10</x>
      <y>400</y>
-     <width>351</width>
+     <width>411</width>
      <height>321</height>
     </rect>
    </property>
@@ -301,7 +289,7 @@
    <widget class="QListWidget" name="position_listWidget">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>50</x>
       <y>20</y>
       <width>321</width>
       <height>261</height>
@@ -311,7 +299,7 @@
    <widget class="QPushButton" name="btnclearlist">
     <property name="geometry">
      <rect>
-      <x>260</x>
+      <x>170</x>
       <y>290</y>
       <width>75</width>
       <height>23</height>
@@ -321,6 +309,53 @@
      <string>清除</string>
     </property>
    </widget>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>710</x>
+     <y>570</y>
+     <width>275</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="startBtn">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="icons.qrc">
+        <normaloff>:/icons/big_starticon.png</normaloff>:/icons/big_starticon.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>120</width>
+        <height>120</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="resultBtn">
+      <property name="text">
+       <string/>
+      </property>
+      <property name="icon">
+       <iconset resource="resources.qrc">
+        <normaloff>:/images/images/smile.png</normaloff>
+        <normalon>:/images/images/cry.png</normalon>:/images/images/smile.png</iconset>
+      </property>
+      <property name="iconSize">
+       <size>
+        <width>120</width>
+        <height>120</height>
+       </size>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources>
