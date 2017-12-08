@@ -6,7 +6,6 @@
 #include "network/motioncontroller.h"
 #include "DisplayView.h"
 #include <thread>
-#include "network/motioncontroller.h"
 #include <opencv2/opencv.hpp>
 
 using namespace ECAT::Network;
@@ -47,7 +46,7 @@ public:
 	void clearVectorArray();
 	void backUpFile();
 signals:
-	void Connect();
+	void connectStart();
 	void Import();
 	void recvImage(quint16/*camera*/, quint16/*width*/, quint16/*height*/, QByteArray/*imageData*/);
 	void ReachLocation(qint32 camera, bool lase);
@@ -56,6 +55,7 @@ signals:
 	void openTopLaser();
 	void openTopFallLaser();
 	void getDeviation();
+	void pushFinished();
 private slots:
 	void onConnectClicked();
 	void onImportBtnClicked();
@@ -79,6 +79,8 @@ private slots:
 	void onBoardCheckBoxStateChanged(int);
 	void onFallCheckBoxStateChanged(int);
 	void onCamComboActivated(int);
+	void onMotionConnected();
+	void onMotionDisconnected();
 private:
     Ui::AutoCalibWidget *ui;
 	QMap<DEVICE_AXIS, int> deviceAxesMap;

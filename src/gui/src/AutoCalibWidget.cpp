@@ -188,6 +188,19 @@ void AutoCalibWidget::initVariables(){
 	
 }
 
+void AutoCalibWidget::onMotionConnected()
+{
+	ui->startBtn->setEnabled(true);
+}
+
+void AutoCalibWidget::onMotionDisconnected()
+{
+	QMessageBox::critical(this,
+		tr("Motion Error"),
+		QString("Connect Failed!")
+		);
+}
+
 void AutoCalibWidget::onDisplayBtnClicked(){
 	//ui->displayBtn->setEnabled(false);
 	CMDParser::getInstance().requestImage({0});
@@ -530,7 +543,7 @@ void AutoCalibWidget::saveXMLFile(QString filename){
 
 void AutoCalibWidget::onConnectClicked(){
 
-	emit Connect();
+	emit connectStart();
 	
 	ui->startBtn->setEnabled(true);
 }
@@ -755,6 +768,8 @@ void AutoCalibWidget::pushFiles()
 	QMessageBox::information(this,
 		tr("Push Finished"),
 		QString("The TransformationTableBin files has been pushed successfully."));
+
+	emit pushFinished();
 }
 
 void AutoCalibWidget::onCalibBtnClicked(){

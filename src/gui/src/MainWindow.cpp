@@ -85,7 +85,13 @@ void MainWindow::initSignals(){
 	connect(networkWidget, SIGNAL(motionDisconnected()), setupWidget, SIGNAL(motionDisconnected()));
 	connect(networkWidget, SIGNAL(motionConnected()), calibrationWidget, SIGNAL(motionConnected()));
 	connect(networkWidget, SIGNAL(motionDisconnected()), calibrationWidget, SIGNAL(motionDisconnected()));
-	connect(autocalibWidget, SIGNAL(Connect()), ui_mainwindow->connectAct, SIGNAL(triggered()));
+	connect(networkWidget, SIGNAL(motionConnected()), autocalibWidget, SLOT(onMotionConnected()));
+	connect(networkWidget, SIGNAL(motionDisconnected()), autocalibWidget, SLOT(onMotionDisconnected()));
+	connect(networkWidget, SIGNAL(motionConnected()), laserdetectWidget, SLOT(onMotionConnected()));
+	connect(networkWidget, SIGNAL(motionDisconnected()), laserdetectWidget, SLOT(onMotionDisconnected()));
+
+	connect(autocalibWidget, SIGNAL(connectStart()), ui_mainwindow->connectAct, SIGNAL(triggered()));
+	connect(autocalibWidget, SIGNAL(pushFinished()), ui_mainwindow->laserdetectAct, SIGNAL(triggered()));
 }
 
 void MainWindow::onConnectAction(){

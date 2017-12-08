@@ -270,6 +270,30 @@
      </item>
     </layout>
    </widget>
+   <widget class="QPushButton" name="resultBtn">
+    <property name="geometry">
+     <rect>
+      <x>120</x>
+      <y>30</y>
+      <width>133</width>
+      <height>129</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="icon">
+     <iconset resource="resources.qrc">
+      <normaloff>:/images/images/smile.png</normaloff>
+      <normalon>:/images/images/cry.png</normalon>:/images/images/smile.png</iconset>
+    </property>
+    <property name="iconSize">
+     <size>
+      <width>120</width>
+      <height>120</height>
+     </size>
+    </property>
+   </widget>
   </widget>
   <widget class="QGroupBox" name="groupBox_4">
    <property name="enabled">
@@ -313,7 +337,7 @@
   <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>710</x>
+     <x>711</x>
      <y>570</y>
      <width>275</width>
      <height>131</height>
@@ -322,12 +346,16 @@
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QPushButton" name="startBtn">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="text">
        <string/>
       </property>
       <property name="icon">
        <iconset resource="icons.qrc">
-        <normaloff>:/icons/big_starticon.png</normaloff>:/icons/big_starticon.png</iconset>
+        <normaloff>:/icons/big_starticon.png</normaloff>
+        <normalon>:/icons/big_stopicon.png</normalon>:/icons/big_starticon.png</iconset>
       </property>
       <property name="iconSize">
        <size>
@@ -335,10 +363,13 @@
         <height>120</height>
        </size>
       </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
      </widget>
     </item>
     <item>
-     <widget class="QPushButton" name="resultBtn">
+     <widget class="QPushButton" name="resultsBtn">
       <property name="text">
        <string/>
       </property>

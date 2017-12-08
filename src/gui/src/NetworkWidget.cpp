@@ -190,6 +190,8 @@ void NetworkWidget::onMotionConnectBtn(){
 				.arg(__LINE__).arg(__FUNCTION__).arg(QString(__FILE__))
 				);
 			HANDLE_MOTION_ERROR(err);
+			emit  motionDisconnected();
+			return;
 		}
 		// take the control of controller
 		err = MotionController::getInstance().takeControl();

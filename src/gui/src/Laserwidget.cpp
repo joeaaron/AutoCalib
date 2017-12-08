@@ -12,6 +12,7 @@ using namespace ECAT::Network;
 #define PI 3.1415926
 const int DETECTACCURACY = 200;
 const double STANDARD = 1500;
+const int POINTNUM = 6;
 
 LaserWidget::LaserWidget(QWidget *parent) :
 QWidget(parent),
@@ -19,7 +20,10 @@ ui(new Ui::LaserWidget),
 laserCenterX(0),
 laserCenterY(0),
 laserRadius(0),
-mouseClick(0)
+mouseClick(0),
+xyzIndex(new QVector<int>()),
+xyzPtr(new XYZ()),
+updateTimer(new QTimer(this))
 {
 	ui->setupUi(this);   //display the UI
 	initUi();
@@ -34,7 +38,7 @@ LaserWidget::~LaserWidget()
 
 void LaserWidget::initUi()
 {
-	
+	ui->resultBtn->hide();
 }
 
 void LaserWidget::initSignals()
@@ -54,9 +58,11 @@ void LaserWidget::initSignals()
 	connect(ui->laserFourBtn, SIGNAL(clicked()), this, SLOT(onLaserFourBtnClicked()));
 	connect(ui->laserCrossOneBtn, SIGNAL(clicked()), this, SLOT(onLaserCrossOneBtnClicked()));
 	connect(ui->laserCrossTwoBtn, SIGNAL(clicked()), this, SLOT(onLaserCrossTwoBtnClicked()));
+	connect(ui->startBtn, SIGNAL(toggled(bool)), this, SLOT(onCalibDetectToggled(bool)));
 	connect(&CMDParser::getInstance(), SIGNAL(updateLaserData(short*, int)),
 		this, SLOT(onUpdateLaserData(short*, int)));
 	connect(dataRefresh, SIGNAL(timeout()), this, SLOT(onDataRefreshCallBack()));
+	connect(this, SIGNAL(reachLocation(qint32)), this, SLOT(onCalibDetect(qint32)));
 	
 }
 
@@ -65,6 +71,32 @@ void LaserWidget::initVariables()
 	mLaserCnt = 0;
 	dataRefresh = new QTimer(this);
 
+	xyzIndex->push_back(1);
+	xyzIndex->push_back(0);
+	xyzIndex->push_back(2);
+	xyzIndex->push_back(3);
+	xyzPtr->setAxes(xyzIndex);
+
+	QString fileName = QDir::currentPath() + "/calibDetectPoint.xml";
+	if (QFile::exists(fileName)){
+		if (readXMLFile(fileName)){
+			updatePoints();
+		}
+		else
+			QMessageBox::warning(
+			this,
+			tr("Config Error"),
+			QString("Can't read xml file, occurred at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+			);
+	}
+	else{
+		QMessageBox::warning(
+			this,
+			tr("Config Error"),
+			QString("No xml file called \"axis-driver.xml\", \
+					please select right xml file and save it as \"axis-driver.xml\" in current directory for convenience.")
+					);
+	}
 	onUpdateLaserData(NULL, 0);
 }
 
@@ -130,9 +162,8 @@ void LaserWidget::onRefStopBtnClicked()
 
 void LaserWidget::onLaserOneBtnClicked()
 {
-	
-	
-	if(resultsQualityJudge(distAvrFirst))
+	bool result = true;
+	if (resultsQualityJudge(distAvrFirst, result))
 		QMessageBox::information(this,
 		tr("Quality OK"),
 		QString("1st laser is calibrated right.")
@@ -146,8 +177,8 @@ void LaserWidget::onLaserOneBtnClicked()
 
 void LaserWidget::onLaserTwoBtnClicked()
 {
-
-	if (resultsQualityJudge(distAvrSecond))
+	bool result = true;
+	if (resultsQualityJudge(distAvrSecond, result))
 		QMessageBox::information(this,
 		tr("Quality OK"),
 		QString("2nd laser is calibrated right.")
@@ -161,7 +192,8 @@ void LaserWidget::onLaserTwoBtnClicked()
 
 void LaserWidget::onLaserThreeBtnClicked()
 {
-	if (resultsQualityJudge(distAvrThird))
+	bool result = true;
+	if (resultsQualityJudge(distAvrThird, result))
 		QMessageBox::information(this,
 		tr("Quality OK"),
 		QString("3rd laser is calibrated right.")
@@ -175,8 +207,8 @@ void LaserWidget::onLaserThreeBtnClicked()
 
 void LaserWidget::onLaserFourBtnClicked()
 {
-	
-	if (resultsQualityJudge(distAvrFourth))
+	bool result = true;
+	if (resultsQualityJudge(distAvrFourth, result))
 		QMessageBox::information(this,
 		tr("Quality OK"),
 		QString("4th laser is calibrated right.")
@@ -191,7 +223,8 @@ void LaserWidget::onLaserFourBtnClicked()
 void LaserWidget::onLaserCrossOneBtnClicked()
 {
 	double distGap = distFirstLeft - distSecondRight;
-	if (resultsCrossQuality(distGap))
+	bool result = true;
+	if (resultsCrossQuality(distGap, result))
 		QMessageBox::information(this,
 		tr("Quality OK"),
 		QString("1st&2nd laser gap is resonable.")
@@ -206,7 +239,8 @@ void LaserWidget::onLaserCrossOneBtnClicked()
 void LaserWidget::onLaserCrossTwoBtnClicked()
 {
 	double distGap = distFirstRight - distFourthLeft;
-	if (resultsCrossQuality(distGap))
+	bool result = true;
+	if (resultsCrossQuality(distGap, result))
 		QMessageBox::information(this,
 		tr("Quality OK"),
 		QString("1st&4th laser gap is resonable.")
@@ -398,7 +432,7 @@ void LaserWidget::setLaserData(QPaintDevice *pPaintDev, QRect rect, short buf[],
 	distFourth.clear();
 }
 
-bool LaserWidget::resultsQualityJudge(double distAvr)
+bool LaserWidget::resultsQualityJudge(double distAvr, bool result)
 {
 	QIcon icon;
 	if (abs(distAvr - 1500) > DETECTACCURACY)
@@ -406,7 +440,7 @@ bool LaserWidget::resultsQualityJudge(double distAvr)
 		icon.addFile(QStringLiteral(":/images/images/cry.png"), QSize(), QIcon::Normal, QIcon::On);
 		ui->resultBtn->setIcon(icon);
 		ui->resultBtn->setIconSize(QSize(120, 120));
-		return false;
+		result = false;
 	}
 		
 	else
@@ -414,12 +448,13 @@ bool LaserWidget::resultsQualityJudge(double distAvr)
 		icon.addFile(QStringLiteral(":/images/images/smile.png"), QSize(), QIcon::Normal, QIcon::Off);
 		ui->resultBtn->setIcon(icon);
 		ui->resultBtn->setIconSize(QSize(120, 120));
-		return true;
+		result = true;
 	}
 		
+	return result;
 }
 
-bool LaserWidget::resultsCrossQuality(double distSide)
+bool LaserWidget::resultsCrossQuality(double distSide, bool result)
 {
 	QIcon icon;
 	if (abs(distSide) > DETECTACCURACY)
@@ -427,7 +462,7 @@ bool LaserWidget::resultsCrossQuality(double distSide)
 		icon.addFile(QStringLiteral(":/images/images/cry.png"), QSize(), QIcon::Normal, QIcon::On);
 		ui->resultBtn->setIcon(icon);
 		ui->resultBtn->setIconSize(QSize(120, 120));
-		return false;
+		result = false;
 	}
 
 	else
@@ -435,9 +470,9 @@ bool LaserWidget::resultsCrossQuality(double distSide)
 		icon.addFile(QStringLiteral(":/images/images/smile.png"), QSize(), QIcon::Normal, QIcon::Off);
 		ui->resultBtn->setIcon(icon);
 		ui->resultBtn->setIconSize(QSize(120, 120));
-		return true;
+		result = true;
 	}
-
+	return result;
 }
 
 ///calc average distance
@@ -517,4 +552,277 @@ void LaserWidget::onUpdateLaserData(short buf[], int cnt)
 	}
 	else
 		mLaserCnt = 0;
+}
+
+void LaserWidget::sleep(unsigned int msec)
+{
+	QTime reachTime = QTime::currentTime().addMSecs(msec);
+
+	while (QTime::currentTime() < reachTime)
+		QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
+}
+
+void LaserWidget::autoMotion()
+{
+	//reach to specified location and make judge
+	for (int pointNum = 0; pointNum < POINTNUM; pointNum++)
+	{
+		suitcaseMotion(pointNum);
+		emit reachLocation(pointNum);
+	}
+	//sum up all the results;
+	for (QVector<bool>::iterator it = results.begin(); it != results.end(); it++)
+	{
+		QIcon icon;
+		qint32 NGNum = 0;
+		if (false == *it)
+			NGNum += 1;
+		if (NGNum > 0)
+		{
+			icon.addFile(QStringLiteral(":/images/images/smile.png"), QSize(), QIcon::Normal, QIcon::Off);
+			ui->resultsBtn->setIcon(icon);
+			ui->resultsBtn->setIconSize(QSize(120, 120));
+		}
+		else
+		{
+			icon.addFile(QStringLiteral(":/images/images/cry.png"), QSize(), QIcon::Normal, QIcon::On);
+			ui->resultsBtn->setIcon(icon);
+			ui->resultsBtn->setIconSize(QSize(120, 120));
+		}
+	}
+	//clear the vector array
+	clearVectorArray();
+}
+
+void LaserWidget::onCalibDetect(qint32 pointNum)
+{
+	onUpLaserGetBtnClicked();
+	bool resultOne = true;
+	bool resultTwo = true;
+	bool resultThree = true;
+	bool resultFour = true;
+	bool resultFive = true;
+
+	double distGapOne = distFirstLeft - distSecondRight;
+	double distGapTwo = distFirstRight - distFourthLeft;
+	//2017-12-07
+	switch (pointNum)
+	{
+	case 0:
+		resultsQualityJudge(distAvrFirst, resultOne);
+		results.push_back(resultOne);
+		break;
+	case 1:
+		resultsCrossQuality(distGapOne, resultTwo);
+		results.push_back(resultTwo);
+		break;
+	case 2:
+		resultsQualityJudge(distAvrSecond, resultThree);
+		results.push_back(resultThree);
+		break;
+	case 3:
+		resultsCrossQuality(distGapTwo, resultFour);
+		results.push_back(resultFour);
+		break;
+	case 4:
+		resultsQualityJudge(distAvrFourth, resultFive);
+		results.push_back(resultFive);
+		break;
+	default:
+		break;
+	}
+}
+
+void LaserWidget::suitcaseMotion(qint32 i)
+{
+	qint32 expXPos, expYPos, expZPos, expRPos;
+	qint32 expXVel, expYVel, expZVel, expRVel;
+
+	expXPos = xyz_xPoint.at(i) * (1 << 17) / 45;
+	expYPos = xyz_yPoint.at(i) * (1 << 17) / 20;
+	expZPos = xyz_zPoint.at(i) * (1 << 17) / 10;
+	expRPos = xyz_rPoint.at(i) * (1 << 17) / 360 * 100;
+	
+	expXVel = 80 * (1 << 17) / 45;
+	expYVel = 65 * (1 << 17) / 20;
+	expZVel = 65 * (1 << 17) / 10;
+	expRVel = 65 * (1 << 17) / 360 * 100;					//INCREMENTAL ENCODER
+	//expRVel = 5 * (1 << 17) / 360 * 100;					//ABSOLUTE ENCODER
+
+	if (!xyzPtr->moveRP2P(expRPos, expRVel)){
+		QMessageBox::critical(this,
+			tr("Motion Error"),
+			QString("XYZ moveRP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+			);
+		return;
+	}
+	sleep(100);
+	xyzPtr->waitFinished(xyzIndex->at(3));
+
+	if (!xyzPtr->moveZP2P(expZPos, expZVel)){
+		QMessageBox::critical(this,
+			tr("Motion Error"),
+			QString("XYZ moveZP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+			);
+		return;
+	}
+	sleep(100);
+	xyzPtr->waitFinished(xyzIndex->at(2));
+
+	if (!xyzPtr->moveXP2P(expXPos, expXVel)){
+		QMessageBox::critical(this,
+			tr("Motion Error"),
+			QString("XYZ moveXP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+			);
+		return;
+	}
+	sleep(100);
+	xyzPtr->waitFinished(xyzIndex->at(1));
+
+	if (!xyzPtr->moveYP2P(expYPos, expYVel)){
+		QMessageBox::critical(this,
+			tr("Motion Error"),
+			QString("XYZ moveYP2P is not successful at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+			);
+		return;
+	}
+	sleep(100);
+	xyzPtr->waitFinished(xyzIndex->at(0));
+
+}
+
+void LaserWidget::onMotionConnected()
+{
+	ui->startBtn->setEnabled(true);
+}
+
+void LaserWidget::onMotionDisconnected()
+{
+	//QMessageBox::critical(this,
+	//	tr("Motion Error"),
+	//	QString("Connect Failed!")
+	//	);
+}
+
+void LaserWidget::onCalibDetectToggled(bool checked)
+{
+	if (checked)
+	{
+		if (!xyzPtr->enabled()){
+			if (!xyzPtr->enable()){
+				QMessageBox::critical(this,
+					tr("Motion Error"),
+					QString("XYZ is not enabled at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+					);
+				return;
+			}
+		}
+
+		updateTimer->start(100);
+
+		if (!motionThread.joinable())
+			motionThread = std::thread(&LaserWidget::autoMotion, this);
+
+		
+	}
+	else
+	{
+		if (!xyzPtr->disable()){
+			QMessageBox::critical(this,
+				tr("Motion Error"),
+				QString("XYZPantilt is not disabled at line number %1 in function %2 in %3 file.").arg(__LINE__).arg(__FUNCTION__).arg(__FILE__)
+				);
+		}
+		else{
+			//delay 500ms to leave axis velocity drop to zero
+			QTimer::singleShot(500, [this](){updateTimer->stop(); });
+		}
+	}
+}
+
+bool LaserWidget::readXMLFile(QString filename){
+	QFile file(filename);
+	if (!file.open(QFile::ReadOnly | QFile::Text)){
+		LOG(ERROR) << "FILE READ ERROR:" << filename.toStdString() << ":" << file.errorString().toStdString();
+		return false;
+	}
+
+	QXmlStreamReader xmlReader(&file);
+	if (xmlReader.readNextStartElement()){
+		if ("Config" == xmlReader.name()){
+			while (xmlReader.readNextStartElement()){
+				if (xmlReader.name() == "suitcase"){
+					while (xmlReader.readNextStartElement()){
+						if (xmlReader.name() == "XYZ_X"){
+							QString xyz_x = xmlReader.readElementText();
+							xyz_xList.append(xyz_x);
+						}
+						else if (xmlReader.name() == "XYZ_Y"){
+							QString xyz_y = xmlReader.readElementText();
+							xyz_yList.append(xyz_y);
+						}
+						else if (xmlReader.name() == "XYZ_Z"){
+							QString xyz_z = xmlReader.readElementText();
+							xyz_zList.append(xyz_z);
+						}
+						else{
+							QString xyz_r = xmlReader.readElementText();
+							xyz_rList.append(xyz_r);
+						}
+					}
+				}
+				
+			}
+		}
+		else{
+			xmlReader.raiseError(tr("Incorrect file"));
+			return false;
+		}
+	}
+	else{
+		LOG(WARNING) << "XML EMPTY WARNING:" << filename.toStdString();
+		return false;
+	}
+	return true;
+}
+
+void LaserWidget::updatePoints(){
+	QString xyz_xEntries = xyz_xList.at(0);
+	QString xyz_yEntries = xyz_yList.at(0);
+	QString xyz_zEntries = xyz_zList.at(0);
+	QString xyz_rEntries = xyz_rList.at(0);
+
+	
+	while (xyz_xPoint.size() < POINTNUM)
+	{
+		int xyz_xSize = xyz_xEntries.size();
+		int xyz_xPos = xyz_xEntries.indexOf(' ');
+		xyz_xPoint.push_back(xyz_xEntries.left(xyz_xPos).toInt());
+		xyz_xEntries = xyz_xEntries.right(xyz_xSize - xyz_xPos - 1);
+
+		int xyz_ySize = xyz_yEntries.size();
+		int xyz_yPos = xyz_yEntries.indexOf(' ');
+		xyz_yPoint.push_back(xyz_yEntries.left(xyz_yPos).toInt());
+		xyz_yEntries = xyz_yEntries.right(xyz_ySize - xyz_yPos - 1);
+
+		int xyz_zSize = xyz_zEntries.size();
+		int xyz_zPos = xyz_zEntries.indexOf(' ');
+		xyz_zPoint.push_back(xyz_zEntries.left(xyz_zPos).toInt());
+		xyz_zEntries = xyz_zEntries.right(xyz_zSize - xyz_zPos - 1);
+
+		int xyz_rSize = xyz_rEntries.size();
+		int xyz_rPos = xyz_rEntries.indexOf(' ');
+		xyz_rPoint.push_back(xyz_rEntries.left(xyz_rPos).toInt());
+		xyz_rEntries = xyz_rEntries.right(xyz_rSize - xyz_rPos - 1);
+	}
+}
+
+void LaserWidget::clearVectorArray()
+{
+	xyz_xPoint.clear();
+	xyz_yPoint.clear();
+	xyz_zPoint.clear();
+	xyz_rPoint.clear();
+
+	results.clear();
 }
