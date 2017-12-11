@@ -188,6 +188,11 @@ void AutoCalibWidget::initVariables(){
 	
 }
 
+void AutoCalibWidget::onSynchroIP(QString address)
+{
+	ipAddress = address;
+}
+
 void AutoCalibWidget::onMotionConnected()
 {
 	ui->startBtn->setEnabled(true);
@@ -253,8 +258,8 @@ void AutoCalibWidget::onTestBtnClicked(){
 
 	//sleep(10000);
 	//ui->processLog->clear();
-	//pushFiles();
-	backUpFile();
+	pushFiles();
+	//backUpFile();
 	/*std::string dirPath = "./images/";
 	File::delAllFiles(dirPath);*/
 	//CMDParser::getInstance().getSuitcaseNum();
@@ -544,8 +549,6 @@ void AutoCalibWidget::saveXMLFile(QString filename){
 void AutoCalibWidget::onConnectClicked(){
 
 	emit connectStart();
-	
-	ui->startBtn->setEnabled(true);
 }
 
 void AutoCalibWidget::onImportBtnClicked(){
@@ -745,7 +748,7 @@ void AutoCalibWidget::pushFiles()
 	int pushTimeConsuming;       
 	
 	//QString connectCommand("adb connect 192.168.200.164");
-	QString connectCommand = "adb connect " + ui->ipCBox->currentText();
+	QString connectCommand = "adb connect " + ipAddress;
 	pushTimeConsuming = 1000;              //find the appropriate time
 	triggerPush(connectCommand, pushTimeConsuming);
 

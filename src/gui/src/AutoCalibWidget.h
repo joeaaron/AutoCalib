@@ -81,6 +81,7 @@ private slots:
 	void onCamComboActivated(int);
 	void onMotionConnected();
 	void onMotionDisconnected();
+	void onSynchroIP(QString);
 private:
     Ui::AutoCalibWidget *ui;
 	QMap<DEVICE_AXIS, int> deviceAxesMap;
@@ -118,6 +119,7 @@ private:
 	QImage imageToSave;
 	QString savePath, saveDir;
 	QString suitcaseID;
+	QString ipAddress;
 
 	bool smallPanSaveFinish;
 	bool bigPanSaveFinish;

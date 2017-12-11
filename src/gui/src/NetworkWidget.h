@@ -26,6 +26,7 @@ signals:
 	void autocamconnect();
 	void autocamopen();
 	void autocontrolconnect();
+	void synchroIP(QString);
 private slots :
 	// vision
 	void onConnectBtnClicked();

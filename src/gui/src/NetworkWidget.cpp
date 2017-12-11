@@ -94,8 +94,12 @@ void NetworkWidget::onConnectBtnClicked(){
 			QMessageBox::warning(this, tr("CAM Error"), tr("The following error occurred:close CAM first before disconnection."));
 	};
 	ui->visionConnectBtn->setEnabled(false);
-	if ("CONNECT" == ui->visionConnectBtn->text())
+	if ("CONNECT" == ui->visionConnectBtn->text()){
 		CMDParser::getInstance().setupNetwork(ui->visionHostCombo->currentText(), ui->visionPortLineEdit->text().toInt());
+		QString ipAddress = ui->visionHostCombo->currentText();
+		emit synchroIP(ipAddress);
+	}
+		
 	else{
 		if ("OPEN_CAM" == ui->visionOpenCamBtn->text()){
 			CMDParser::getInstance().exitNetwork();
