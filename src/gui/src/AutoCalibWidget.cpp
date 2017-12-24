@@ -656,8 +656,8 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 			);
 		return;
 	}
-	sleep(100);
-	xyzPtr->waitFinished(xyzaxesIndex->at(3));
+	//sleep(100);
+	//xyzPtr->waitFinished(xyzaxesIndex->at(3));
 
 	if (!xyzPtr->moveZP2P(expZPos, expZVel)){
 		QMessageBox::critical(this,
@@ -666,8 +666,8 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 			);
 		return;
 	}
-	sleep(100);
-	xyzPtr->waitFinished(xyzaxesIndex->at(2));
+	/*sleep(100);
+	xyzPtr->waitFinished(xyzaxesIndex->at(2));*/
 
 	if (!xyzPtr->moveXP2P(expXPos, expXVel)){
 		QMessageBox::critical(this,
@@ -676,8 +676,8 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 			);
 		return;
 	}
-	sleep(100);
-	xyzPtr->waitFinished(xyzaxesIndex->at(1));
+	//sleep(100);
+	//xyzPtr->waitFinished(xyzaxesIndex->at(1));
 
 	if (!xyzPtr->moveYP2P(expYPos, expYVel)){
 		QMessageBox::critical(this,
@@ -686,15 +686,11 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 			);
 		return;
 	}
-	sleep(100);
-	xyzPtr->waitFinished(xyzaxesIndex->at(0));
+	//sleep(100);
+	//xyzPtr->waitFinished(xyzaxesIndex->at(0));
 	//2018-12-24
-	/*for (int i = 0; i < 4; ++i)
-	{
-	if (xyzPtr->waitFinished(i))
-	{
-	}
-	}*/
+	for (int i = 0; i < 4; ++i)
+		if (xyzPtr->waitFinished(i));
 }
 
 void AutoCalibWidget::sleep(unsigned int msec)
@@ -779,9 +775,17 @@ void AutoCalibWidget::pushFiles()
 	pushTimeConsuming = 1000;              //find the appropriate time
 	triggerPush(connectCommand, pushTimeConsuming);
 
-	QString binFilesCommand("adb push ./images/cowa_cam_config/aligned /data/cowa_cam_config");
-	pushTimeConsuming = 15000;              //find the appropriate time
+	QString binFilesCommand("adb push ./image/transformationTable1.bin /data/cowa_cam_config");
+	pushTimeConsuming = 5000;              //find the appropriate time
 	triggerPush(binFilesCommand, pushTimeConsuming);
+
+	//QString binFilesCommand("adb push ./image/transformationTable1.bin /data/cowa_cam_config");
+	//pushTimeConsuming = 5000;              //find the appropriate time
+	//triggerPush(binFilesCommand, pushTimeConsuming);
+
+	//QString binFilesCommand("adb push ./image/transformationTable4.bin /data/cowa_cam_config");
+	//pushTimeConsuming = 5000;              //find the appropriate time
+	//triggerPush(binFilesCommand, pushTimeConsuming);
 
 	QString yDividingCommand("adb push yDividing.txt /data/cowa_cam_config");
 	pushTimeConsuming = 500;
@@ -1107,7 +1111,7 @@ void AutoCalibWidget::onSmallBoardMotion()
 					);
 				return;
 			}
-			smallPanTiltPtr->waitFinished(smallaxesIndex->at(0));
+			//smallPanTiltPtr->waitFinished(smallaxesIndex->at(0));
 
 			if (!smallPanTiltPtr->yawP2P(expSmallYawPos, expSmallVel)){
 				QMessageBox::critical(this,
@@ -1116,7 +1120,10 @@ void AutoCalibWidget::onSmallBoardMotion()
 					);
 				return;
 			}
-			smallPanTiltPtr->waitFinished(smallaxesIndex->at(1));
+			//smallPanTiltPtr->waitFinished(smallaxesIndex->at(1));
+
+			for (int i = 6; i < 8; ++i)
+				if (smallPanTiltPtr->waitFinished(i));
 
 			if (j < 5)
 			{
@@ -1592,7 +1599,7 @@ void AutoCalibWidget::onMotionStart(){
 		onSmallBoardMotion();
 		//onSmallBoardMotionPro();       //not used yet
 		//calib using the big board
-		onLargeBoardMotion();
+		//onLargeBoardMotion();
 	}
 		
 	else
@@ -1609,7 +1616,7 @@ void AutoCalibWidget::onMotionStart(){
 		{
 			endPoint = 5;
 			//calib using the big board
-			onLargeBoardMotion();
+			//onLargeBoardMotion();
 		}
 	}
 
