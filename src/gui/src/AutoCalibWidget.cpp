@@ -127,7 +127,8 @@ void AutoCalibWidget::onCamComboActivated(int index){
 void AutoCalibWidget::initVariables(){
 
 	//initialize the saving settings
-	savePath = "./images/top";
+	//savePath = "./images/top";
+	savePath = "./image";
 	saveDir = "1";
 	num = 0;
 	cameraID = 0;         //default cameraID is 0
@@ -227,6 +228,13 @@ void AutoCalibWidget::onFallCheckBoxStateChanged(int state)
 		isFallLaserCalibrate = true;
 }
 
+void calib(int n)
+{
+	char cmd[128];
+	sprintf(cmd, "calibrate.exe image %d", n);
+	system(cmd);
+}
+
 void AutoCalibWidget::onTestBtnClicked(){
 	//Do something
 	//onSmallBoardMotionPro();     //test vision servo
@@ -258,7 +266,20 @@ void AutoCalibWidget::onTestBtnClicked(){
 
 	//sleep(10000);
 	//ui->processLog->clear();
-	pushFiles();
+	//pushFiles();
+	std::thread threads[3];
+
+	threads[0] = std::thread(calib, 1);
+	threads[1] = std::thread(calib, 2);
+	threads[2] = std::thread(calib, 4);
+
+	for (auto &pThread : threads){
+		pThread.join();
+	}
+		
+	QMessageBox::information(this,
+		tr("CalibInformation"),
+		QString("Calib Finished!"));
 	//backUpFile();
 	/*std::string dirPath = "./images/";
 	File::delAllFiles(dirPath);*/
@@ -667,7 +688,13 @@ void AutoCalibWidget::suitcaseMotion(qint32 i)
 	}
 	sleep(100);
 	xyzPtr->waitFinished(xyzaxesIndex->at(0));
-
+	//2018-12-24
+	/*for (int i = 0; i < 4; ++i)
+	{
+	if (xyzPtr->waitFinished(i))
+	{
+	}
+	}*/
 }
 
 void AutoCalibWidget::sleep(unsigned int msec)
@@ -777,8 +804,24 @@ void AutoCalibWidget::pushFiles()
 
 void AutoCalibWidget::onCalibBtnClicked(){
 
-	if (!calibThread.joinable())
-		calibThread = std::thread(&AutoCalibWidget::cowaCalib, this);
+	/*if (!calibThread.joinable())
+		calibThread = std::thread(&AutoCalibWidget::cowaCalib, this);*/
+	std::thread threads[3];
+
+	threads[0] = std::thread(calib, 1);
+	threads[1] = std::thread(calib, 2);
+	threads[2] = std::thread(calib, 4);
+
+	for (auto &pThread : threads){
+		pThread.join();
+	}
+
+	QMessageBox::information(this,
+		tr("CalibInformation"),
+		QString("CalibImgs Finished!"));
+
+	///adb push .bin files to suitcase
+	pushFiles();  //to be finished
 }
 
 /*----------------------------
