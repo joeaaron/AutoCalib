@@ -12,7 +12,7 @@ using namespace std;
 #include "ecatmc.h"
 #define DEBUG_INFO(...) //printf
 
-#define SERIAL_SIZE 4
+#define SERIAL_SIZE 3
 CSerialPort serial_port[SERIAL_SIZE];
 string cmd[SERIAL_SIZE * 2];
 int32_t ret[SERIAL_SIZE * 2] = { 0 };

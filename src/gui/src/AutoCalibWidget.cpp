@@ -1214,6 +1214,9 @@ void AutoCalibWidget::onSmallBoardMotion()
 		return;
 	}
 	smallPanTiltPtr->waitFinished(smallaxesIndex->at(0));
+
+	smallPanSaveFinish = true;
+	suitcaseMotion(endPoint);
 }
 
 void AutoCalibWidget::onLargeBoardMotion()
