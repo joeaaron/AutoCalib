@@ -15,7 +15,7 @@
   </property>
   <widget class="QGroupBox" name="groupBox">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="geometry">
     <rect>
@@ -191,7 +191,7 @@
   </widget>
   <widget class="QGroupBox" name="groupBox_2">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="geometry">
     <rect>
@@ -297,7 +297,7 @@
   </widget>
   <widget class="QGroupBox" name="groupBox_4">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="geometry">
     <rect>

@@ -38,7 +38,7 @@ LaserWidget::~LaserWidget()
 
 void LaserWidget::initUi()
 {
-	ui->resultBtn->hide();
+	//ui->resultBtn->hide();
 }
 
 void LaserWidget::initSignals()
@@ -401,7 +401,7 @@ void LaserWidget::setLaserData(QPaintDevice *pPaintDev, QRect rect, short buf[],
 		}
 		if ((buf[2 * i] > 4000) || (buf[2 * i] < -4000)) continue;
 		if ((buf[2 * i + 1] > 4000) || (buf[2 * i + 1] < -4000)) continue;
-	//	qDebug()<<"mLaserData:"<<i<<","<< (buf[2 * i])<<","<<(buf[2 * i + 1]);
+		qDebug()<<"mLaserData:"<<i<<","<< (buf[2 * i])<<","<<(buf[2 * i + 1]);
 		painter.drawEllipse(laserCenterX + (float)laserRadius*buf[2 * i+1] / 4000,
 			laserCenterY - (float)laserRadius*buf[2 * i ] / 4000, 2, 2);
 	//	qDebug() << "x:" << laserCenterX + (float)laserRadius*buf[2 * i + 1] / 4000 << ","
@@ -487,16 +487,16 @@ void LaserWidget::calcAverDist(std::vector<double> dist, double& distAvr, double
 	{
 		distAll += dist[m];
 		//qDebug() << "distFirst:" << dist[m];
-		if (m < 30)
+		if (m < 60)
 			distLeft += dist[m];
 		
-		if (m > dist.size() - 30 - 1)
+		if (m > dist.size() - 60 - 1)
 			distRight += dist[m];
 	}
 
 	distAvr = distAll / 640;
-	distLeft = distLeft / 30;
-	distRight = distRight / 30;
+	distLeft = distLeft / 60;
+	distRight = distRight / 60;
 
 }
 

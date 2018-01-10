@@ -149,8 +149,8 @@ void NetworkWidget::onHandleConnection(){
 	//if cmdparse is connected, change state of opencamBtn
 	//ui->visionOpenCamBtn->setEnabled(true);
 	QMessageBox::information(this, tr("Connect"), tr("CameraConnection Successful!"));
-	onOpencamBtnClicked();
 	heartBeatTimer->start(1000);
+	CMDParser::getInstance().openCam();
 }
 
 void NetworkWidget::onHandleDisconnection(){
