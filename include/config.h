@@ -8,5 +8,5 @@
 #define BUILD_CV
 #define BUILD_GUI
 
-/* #undef CV_CALIB_EXPORT */
+#define CV_CALIB_EXPORT
 #endif

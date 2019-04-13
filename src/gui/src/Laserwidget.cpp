@@ -93,7 +93,7 @@ void LaserWidget::initVariables()
 		QMessageBox::warning(
 			this,
 			tr("Config Error"),
-			QString("No xml file called \"axis-driver.xml\", \
+			QString("No xml file called \"calibDetectPoint.xml\", \
 					please select right xml file and save it as \"axis-driver.xml\" in current directory for convenience.")
 					);
 	}

@@ -711,7 +711,7 @@ void AutoCalibWidget::onRecvImage(quint16 camera, quint16 width, quint16 height,
 		srcImg = QImage2cvMat(image);
 		//Calib::GetDeviationPara(srcImg, para);
 		cv::Mat img = srcImg.clone();
-		Image::ImgAvgGrayValue(img, bFind);
+		//Image::ImgAvgGrayValue(img, bFind);
 
 		//save img or not
 		if (!isSaveImage)
